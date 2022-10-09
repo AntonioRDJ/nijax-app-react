@@ -18,7 +18,7 @@ export const SignIn = () => {
             <IonInput type="password" value={"senha123"}></IonInput>
           </IonItem>
           <SignInButton shape="round">Entrar</SignInButton>
-          <SignUpButton fill="clear" routerLink="/sign-up" routerDirection="forward" >Cadastre-se</SignUpButton>
+          <SignUpButton fill="clear" routerLink="/signup" routerDirection="forward" >Cadastre-se</SignUpButton>
         </StyledContainer>
       </IonContent>
     </IonPage>

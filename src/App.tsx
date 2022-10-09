@@ -24,6 +24,7 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import { SignIn } from './pages/signIn';
 import { SignUp } from './pages/signUp';
+import { ProfessionalSignUp } from './pages/professionalSignUp';
 
 setupIonicReact();
 
@@ -38,13 +39,16 @@ const App: React.FC = () => {
               <Page />
             </Route>
             <Route path="/" exact={true}>
-              <Redirect to="/page/Inbox" />
+              <Redirect to="/login" />
             </Route>
-            <Route path="/sign-in" exact={true}>
+            <Route path="/login" exact={true}>
               <SignIn />
             </Route>
-            <Route path="/sign-up" exact={true}>
+            <Route path="/signup" exact={true}>
               <SignUp />
+            </Route>
+            <Route path="/signup/professional" exact={true}>
+              <ProfessionalSignUp />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>
