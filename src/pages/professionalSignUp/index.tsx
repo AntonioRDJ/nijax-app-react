@@ -57,7 +57,7 @@ export const ProfessionalSignUp = () => {
 
       <IonFooter collapse="fade">
         <IonToolbar>
-          <IonButtons>
+          <IonButtons style={{justifyContent: "center"}}>
             <IonButton shape="round">Confirmar</IonButton>
           </IonButtons>
         </IonToolbar>

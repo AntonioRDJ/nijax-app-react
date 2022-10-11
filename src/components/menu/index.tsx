@@ -22,8 +22,8 @@ interface AppPage {
 }
 
 const disabledPages = [
-  "/sign-in",
-  "/sign-up"
+  "/login",
+  "/signup"
 ]
 
 const appPages: AppPage[] = [
