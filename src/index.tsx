@@ -5,6 +5,7 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { setupStore } from './store';
+import { GlobalContextProvider } from './contexts/GlobalContext';
 
 const store = setupStore();
 
@@ -13,7 +14,9 @@ const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <GlobalContextProvider>
+        <App />
+      </GlobalContextProvider>
     </Provider>
   </React.StrictMode>
 );

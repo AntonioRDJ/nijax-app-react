@@ -1,10 +1,10 @@
 
 export interface SignupState {
-  isProfessional: boolean;
+  isCompany: boolean;
   name: string;
   email: string;
   cellphone: string;
-  cpfOrCnpj?: number;
+  cpfCnpj?: number;
   password: string;
   confirmPassword: string;
 };

@@ -13,24 +13,64 @@ import {
   IonTitle,
   IonToggle,
   IonToolbar,
+  useIonRouter,
 } from "@ionic/react";
+import { useState } from "react";
+import { useGlobal } from "../../contexts/GlobalContext";
+import { CreateUser } from "../../services/user/types";
+import { createUser } from "../../services/user/user.service";
 import { useAppDispatch, useAppSelector } from "../../store";
 import {
-  updateCellphone,
-  updateConfirmPassword,
-  updateCpfOrCnpj,
-  updateEmail,
-  updateIsProfessional,
-  updateName,
-  updatePassword,
+  updateFields,
 } from "../../store/reducers/Signup/slice";
 
-export const SignUp = () => {
-  const signUp = useAppSelector(state => state.signup);
-  const dispatch = useAppDispatch();
+const requiredFields = ["name", "email", "cellphone", "cpfCnpj", "password", "confirmPassword"];
 
-  const handleConfirm = () => {
-    console.log("signUp ", signUp);
+export const SignUp = () => {
+  const [isCompany, setIsCompany] = useState(false);
+  const [name, setName] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [cellphone, setCellphone] = useState<string>();
+  const [cpfCnpj, setCpfCnpj] = useState<number>();
+  const [password, setPassword] = useState<string>();
+  const [confirmPassword, setConfirmPassword] = useState<string>();
+  const dispatch = useAppDispatch();
+  const { presentToast } = useGlobal();
+  const router = useIonRouter();
+
+  const goToNextPage = () => {
+    dispatch(updateFields({
+      isCompany,
+      name: name!,
+      email: email!,
+      cellphone: cellphone!,
+      cpfCnpj,
+      password: password!,
+      confirmPassword: confirmPassword!,
+    }));
+    router.push("signup/professional", "forward");
+  };
+
+  const handleConfirm = async (toNextPage: boolean) => {
+    const userToCreate = {isCompany, name, email, cellphone, cpfCnpj, password, confirmPassword}; 
+    if(requiredFields.some(key => !userToCreate[key as keyof typeof userToCreate])) {
+      presentToast({message: "Por favor preencha todos os campos."});
+      return;
+    }
+
+    if(toNextPage) {
+      goToNextPage();
+      return;
+    }
+
+    const success = await createUser(userToCreate as CreateUser);
+
+    if(!success) {
+      presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
+      return;
+    }
+    presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
+    router.push("/login", "root");
   };
 
   return (
@@ -45,21 +85,21 @@ export const SignUp = () => {
       </IonHeader>
 
       <IonContent fullscreen>
-        <IonList>
+        <IonList style={{padding: "0 12px", overflow: "hidden"}}>
           <IonItem>
             <IonLabel>Deseja se cadastrar como profissional?</IonLabel>
             <IonToggle
               slot="end"
-              checked={signUp.isProfessional}
-              onIonChange={(e) => dispatch(updateIsProfessional(e.detail.checked))}
+              checked={isCompany}
+              onIonChange={(e) => setIsCompany(e.detail.checked)}
             ></IonToggle>
           </IonItem>
           <IonItem>
             <IonLabel position="floating">Nome</IonLabel>
             <IonInput
               type="text"
-              value={signUp.name}
-              onIonChange={(e) => dispatch(updateName(e.detail.value!))}
+              value={name}
+              onIonChange={(e) => setName(e.detail.value!)}
             ></IonInput>
           </IonItem>
 
@@ -67,8 +107,8 @@ export const SignUp = () => {
             <IonLabel position="floating">Email</IonLabel>
             <IonInput
               type="email"
-              value={signUp.email}
-              onIonChange={(e) => dispatch(updateEmail(e.detail.value!))}
+              value={email}
+              onIonChange={(e) => setEmail(e.detail.value!)}
             ></IonInput>
           </IonItem>
 
@@ -76,8 +116,8 @@ export const SignUp = () => {
             <IonLabel position="floating">Celular</IonLabel>
             <IonInput
               type="tel"
-              value={signUp.cellphone}
-              onIonChange={(e) => dispatch(updateCellphone(e.detail.value!))}
+              value={cellphone}
+              onIonChange={(e) => setCellphone(e.detail.value!)}
             ></IonInput>
           </IonItem>
 
@@ -85,8 +125,8 @@ export const SignUp = () => {
             <IonLabel position="floating">CPF/CNPJ</IonLabel>
             <IonInput
               type="number"
-              value={signUp.cpfOrCnpj}
-              onIonChange={(e) => dispatch(updateCpfOrCnpj(parseInt(e.detail.value!)))}
+              value={cpfCnpj}
+              onIonChange={(e) => setCpfCnpj(parseInt(e.detail.value!))}
             ></IonInput>
           </IonItem>
 
@@ -94,8 +134,8 @@ export const SignUp = () => {
             <IonLabel position="floating">Senha</IonLabel>
             <IonInput
               type="password"
-              value={signUp.password}
-              onIonChange={(e) => dispatch(updatePassword(e.detail.value!))}
+              value={password}
+              onIonChange={(e) => setPassword(e.detail.value!)}
             ></IonInput>
           </IonItem>
 
@@ -103,8 +143,8 @@ export const SignUp = () => {
             <IonLabel position="floating">Confirme a senha</IonLabel>
             <IonInput
               type="password"
-              value={signUp.confirmPassword}
-              onIonChange={(e) => dispatch(updateConfirmPassword(e.detail.value!))}
+              value={confirmPassword}
+              onIonChange={(e) => setConfirmPassword(e.detail.value!)}
             ></IonInput>
           </IonItem>
         </IonList>
@@ -113,20 +153,9 @@ export const SignUp = () => {
       <IonFooter collapse="fade">
         <IonToolbar>
           <IonButtons style={{ justifyContent: "center" }}>
-            {signUp.isProfessional ? (
-              <IonButton
-                shape="round"
-                routerLink="signup/professional"
-                routerDirection="forward"
-                routerOptions={{}}
-              >
-                Avançar
-              </IonButton>
-            ) : (
-              <IonButton shape="round" onClick={handleConfirm}>
-                Confirmar
-              </IonButton>
-            )}
+            <IonButton shape="round" onClick={() => handleConfirm(isCompany)}>
+              {isCompany ? "Avançar" : "Confirmar"}
+            </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonFooter>

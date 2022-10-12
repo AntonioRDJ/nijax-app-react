@@ -3,11 +3,11 @@ import { SignupState } from "./types";
 
 
 export const initialState: SignupState = {
-  isProfessional: false,
+  isCompany: false,
   name: "",
   email: "",
   cellphone: "",
-  cpfOrCnpj: undefined,
+  cpfCnpj: undefined,
   password: "",
   confirmPassword: "",
 };
@@ -16,38 +16,30 @@ export const signupSlice = createSlice({
   name: "signup",
   initialState,
   reducers: {
-    updateIsProfessional: (state, action: {payload: boolean; type: string}) => {
-      state.isProfessional = action.payload;
+    updateFields: (state, action: { payload: SignupState, type: string}) => {
+      state.isCompany = action.payload.isCompany;
+      state.name = action.payload.name;
+      state.email = action.payload.email;
+      state.cellphone = action.payload.cellphone;
+      state.cpfCnpj = action.payload.cpfCnpj;
+      state.password = action.payload.password;
+      state.confirmPassword = action.payload.confirmPassword;
     },
-    updateName: (state, action: {payload: string; type: string}) => {
-      state.name = action.payload;
-    },
-    updateEmail: (state, action: {payload: string; type: string}) => {
-      state.email = action.payload;
-    },
-    updateCellphone: (state, action: {payload: string; type: string}) => {
-      state.cellphone = action.payload;
-    },
-    updateCpfOrCnpj : (state, action: {payload: number; type: string}) => {
-      state.cpfOrCnpj = action.payload;
-    },
-    updatePassword : (state, action: {payload: string; type: string}) => {
-      state.password = action.payload;
-    },
-    updateConfirmPassword : (state, action: {payload: string; type: string}) => {
-      state.confirmPassword = action.payload;
+    resetFields: (state) => {
+      state.isCompany = false;
+      state.name = "";
+      state.email = "";
+      state.cellphone = "";
+      state.cpfCnpj = undefined;
+      state.password = "";
+      state.confirmPassword = "";
     },
   },
   extraReducers: (builder) => {},
 });
 
 export const {
-  updateCellphone,
-  updateConfirmPassword,
-  updateCpfOrCnpj,
-  updateEmail,
-  updateIsProfessional,
-  updateName,
-  updatePassword,
+  updateFields,
+  resetFields,
 } = signupSlice.actions;
 export default signupSlice.reducer;
