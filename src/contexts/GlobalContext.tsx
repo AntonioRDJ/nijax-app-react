@@ -1,5 +1,5 @@
 import { ToastOptions, useIonToast } from "@ionic/react";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext } from "react";
 
 type GlobalContextData = {
   presentToast: (props?: ToastOptions) => void;

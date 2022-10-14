@@ -1,5 +1,5 @@
 import { api } from "../api";
-import { CreateProvider, CreateUser, User } from "./types";
+import { CreateProvider, CreateUser } from "./types";
 
 export const createUser = async (user: CreateUser): Promise<boolean> => {
   try {

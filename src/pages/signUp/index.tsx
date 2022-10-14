@@ -19,7 +19,7 @@ import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { CreateUser } from "../../services/user/types";
 import { createUser } from "../../services/user/user.service";
-import { useAppDispatch, useAppSelector } from "../../store";
+import { useAppDispatch } from "../../store";
 import {
   updateFields,
 } from "../../store/reducers/Signup/slice";
