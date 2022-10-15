@@ -7,6 +7,7 @@ export const initialState: SignupState = {
   name: "",
   email: "",
   cellphone: "",
+  birthDate: "",
   cpfCnpj: undefined,
   password: "",
   confirmPassword: "",
@@ -21,6 +22,7 @@ export const signupSlice = createSlice({
       state.name = action.payload.name;
       state.email = action.payload.email;
       state.cellphone = action.payload.cellphone;
+      state.birthDate = action.payload.birthDate;
       state.cpfCnpj = action.payload.cpfCnpj;
       state.password = action.payload.password;
       state.confirmPassword = action.payload.confirmPassword;
@@ -30,6 +32,7 @@ export const signupSlice = createSlice({
       state.name = "";
       state.email = "";
       state.cellphone = "";
+      state.birthDate = "";
       state.cpfCnpj = undefined;
       state.password = "";
       state.confirmPassword = "";

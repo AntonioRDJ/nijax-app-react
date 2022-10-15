@@ -5,21 +5,40 @@ export interface User {
   name: string;
   email: string;
   cellphone: string;
-  cpf_cpnj: number;
-  is_company: boolean;
+  birthDate: Date | string;
+  cpfCpnj: number;
+  isCompany: boolean;
+  provider?: Provider;
 };
 
-export interface CreateUser {
+export interface Provider {
+  id: string;
+  address: string;
+  fantasyName?: string;
+  experiences: Experience[];
+  formations: Formation[];
+  socialNetworks: SocialNetwork[];
+};
+
+export interface CreateUserResponse {
+  data: {
+    accessToken: string,
+    user: User,
+  }
+};
+
+export interface CreateUserRequest {
   isCompany: boolean;
   name: string;
   email: string;
   cellphone: string;
+  birthDate: Date | string;
   cpfCnpj: number;
   password: string;
   confirmPassword: string;
 };
 
-export interface CreateProvider extends CreateUser {
+export interface CreateProviderRequest extends CreateUserRequest {
   fantasyName?: string;
   address: string;
   service: Service;

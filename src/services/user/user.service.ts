@@ -1,28 +1,23 @@
 import { api } from "../api";
-import { CreateProvider, CreateUser } from "./types";
+import { CreateProviderRequest, CreateUserRequest, CreateUserResponse } from "./types";
 
-export const createUser = async (user: CreateUser): Promise<boolean> => {
-  try {
-    await api.post(`user`, {
-      data: {
-        user
-      }
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
+export const userEndpoints = api.injectEndpoints({
+  endpoints: builder => ({
+    createUser: builder.mutation<CreateUserResponse, CreateUserRequest>({
+      query: (user: CreateUserRequest) => ({
+        url: 'v1/user',
+        method: 'POST',
+        body: user,
+      }),
+    }),
+    createProvider: builder.mutation<CreateUserResponse, CreateProviderRequest>({
+      query: (provider: CreateProviderRequest) => ({
+        url: 'v1/user',
+        method: 'POST',
+        body: provider,
+      }),
+    }),
+  }),
+});
 
-export const createProvider = async (user: CreateProvider): Promise<boolean> => {
-  try {
-    await api.post(`user`, {
-      data: {
-        user
-      }
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
+export const { useCreateUserMutation, useCreateProviderMutation } = userEndpoints;

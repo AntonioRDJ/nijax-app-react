@@ -1,16 +1,16 @@
 import { api } from "../api";
+import { LoginResponse, LoginRequest } from "./types";
 
+export const authEndpoints = api.injectEndpoints({
+  endpoints: builder => ({
+    login: builder.mutation<LoginResponse, LoginRequest>({
+      query: (credentials) => ({
+        url: 'v1/auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+  }),
+});
 
-export const authenticate = async (login: string, password: string): Promise<boolean> => {
-  try {
-    await api.post(`user/auth`, {
-      data: {
-        login,
-        password
-      }
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
+export const { useLoginMutation } = authEndpoints;

@@ -1,13 +1,14 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
-import { createProvider } from "../../services/user/user.service";
-import { CreateProvider, Experience, Formation, SocialNetwork } from "../../services/user/types";
-import { useAppSelector } from "../../store";
+import { useCreateProviderMutation } from "../../services/user/user.service";
+import { CreateProviderRequest, Experience, Formation, SocialNetwork } from "../../services/user/types";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { Service, ServiceBR } from "../../utils/constants";
 import { Experiences } from "./experiences";
 import { Formations } from "./formations";
 import { SocialNetworks } from "./socialNetworks";
+import { saveUser } from "../../store/reducers/User/slice";
 
 const requiredFields = ["address", "service"];
 
@@ -19,7 +20,10 @@ export const ProfessionalSignUp = () => {
   const [formations, setFormations] = useState<Formation[]>([]);
   const [socialNetworks, setSocialNetworks] = useState<SocialNetwork[]>([]);
 
+  const [createProvider] = useCreateProviderMutation();
+
   const signup = useAppSelector(state => state.signup);
+  const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
   const router = useIonRouter();
 
@@ -30,14 +34,14 @@ export const ProfessionalSignUp = () => {
       return;
     }
 
-    const success = await createProvider({...signup, ...providerToCreate} as CreateProvider);
-
-    if(!success) {
+    try {
+      const { data } = await createProvider({...signup, ...providerToCreate} as CreateProviderRequest).unwrap();
+      presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
+      dispatch(saveUser(data));
+      router.push("/page/index", "root");
+    } catch (error) {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
-      return;
     }
-    presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
-    router.push("/login", "root");
   };
 
   return (

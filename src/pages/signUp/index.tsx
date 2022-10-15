@@ -17,14 +17,15 @@ import {
 } from "@ionic/react";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
-import { CreateUser } from "../../services/user/types";
-import { createUser } from "../../services/user/user.service";
+import { CreateUserRequest } from "../../services/user/types";
+import { useCreateUserMutation } from "../../services/user/user.service";
 import { useAppDispatch } from "../../store";
 import {
   updateFields,
 } from "../../store/reducers/Signup/slice";
+import { saveUser } from "../../store/reducers/User/slice";
 
-const requiredFields = ["name", "email", "cellphone", "cpfCnpj", "password", "confirmPassword"];
+const requiredFields = ["name", "email", "cellphone", "birthDate", "cpfCnpj", "password", "confirmPassword"];
 
 export const SignUp = () => {
   const [isCompany, setIsCompany] = useState(false);
@@ -34,9 +35,12 @@ export const SignUp = () => {
   const [cpfCnpj, setCpfCnpj] = useState<number>();
   const [password, setPassword] = useState<string>();
   const [confirmPassword, setConfirmPassword] = useState<string>();
+  const [birthDate, setBirthDate] = useState<Date | string>();
   const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
   const router = useIonRouter();
+
+  const [createUser] = useCreateUserMutation();
 
   const goToNextPage = () => {
     dispatch(updateFields({
@@ -44,6 +48,7 @@ export const SignUp = () => {
       name: name!,
       email: email!,
       cellphone: cellphone!,
+      birthDate: birthDate!,
       cpfCnpj,
       password: password!,
       confirmPassword: confirmPassword!,
@@ -52,7 +57,7 @@ export const SignUp = () => {
   };
 
   const handleConfirm = async (toNextPage: boolean) => {
-    const userToCreate = {isCompany, name, email, cellphone, cpfCnpj, password, confirmPassword}; 
+    const userToCreate = {isCompany, name, email, cellphone, birthDate, cpfCnpj, password, confirmPassword}; 
     if(requiredFields.some(key => !userToCreate[key as keyof typeof userToCreate])) {
       presentToast({message: "Por favor preencha todos os campos."});
       return;
@@ -63,14 +68,14 @@ export const SignUp = () => {
       return;
     }
 
-    const success = await createUser(userToCreate as CreateUser);
-
-    if(!success) {
+    try {
+      const { data } = await createUser(userToCreate as CreateUserRequest).unwrap();
+      presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
+      dispatch(saveUser(data));
+      router.push("/page/index", "root");
+    } catch (error) {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
-      return;
     }
-    presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
-    router.push("/login", "root");
   };
 
   return (
@@ -118,6 +123,15 @@ export const SignUp = () => {
               type="tel"
               value={cellphone}
               onIonChange={(e) => setCellphone(e.detail.value!)}
+            ></IonInput>
+          </IonItem>
+
+          <IonItem>
+            <IonLabel>Data de nascimento</IonLabel>
+            <IonInput
+              type="date"
+              value={birthDate?.toString()}
+              onIonChange={(e) => setBirthDate(e.detail.value!)}
             ></IonInput>
           </IonItem>
 

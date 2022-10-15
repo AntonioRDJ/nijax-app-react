@@ -4,6 +4,7 @@ export interface SignupState {
   name: string;
   email: string;
   cellphone: string;
+  birthDate: Date | string;
   cpfCnpj?: number;
   password: string;
   confirmPassword: string;
