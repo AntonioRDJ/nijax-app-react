@@ -12,7 +12,7 @@ import {
 
 import { useLocation } from 'react-router-dom';
 import { archiveOutline, archiveSharp, bookmarkOutline, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
-import './Menu.css';
+import './styles.module.css';
 
 interface AppPage {
   url: string;
@@ -20,6 +20,11 @@ interface AppPage {
   mdIcon: string;
   title: string;
 }
+
+const disabledPages = [
+  "/login",
+  "/signup"
+]
 
 const appPages: AppPage[] = [
   {
@@ -64,9 +69,9 @@ const labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
 const Menu: React.FC = () => {
   const location = useLocation();
-
+  console.log("alo ", location.pathname);
   return (
-    <IonMenu contentId="main" type="overlay">
+    <IonMenu contentId="main" type="overlay" disabled={disabledPages.includes(location.pathname)}>
       <IonContent>
         <IonList id="inbox-list">
           <IonListHeader>Inbox</IonListHeader>
