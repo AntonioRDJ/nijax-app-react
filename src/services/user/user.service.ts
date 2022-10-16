@@ -1,7 +1,7 @@
-import { api } from "../api";
+import { apiSlice } from "../api";
 import { CreateProviderRequest, CreateUserRequest, CreateUserResponse } from "./types";
 
-export const userEndpoints = api.injectEndpoints({
+export const userEndpoints = apiSlice.injectEndpoints({
   endpoints: builder => ({
     createUser: builder.mutation<CreateUserResponse, CreateUserRequest>({
       query: (user: CreateUserRequest) => ({

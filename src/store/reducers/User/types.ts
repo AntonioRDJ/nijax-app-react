@@ -4,4 +4,5 @@ export interface UserState {
   loggedIn: boolean;
   accessToken?: string;
   user?: User;
+  nameToDisplay?: string;
 };
