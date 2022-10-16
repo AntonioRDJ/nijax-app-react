@@ -22,6 +22,7 @@
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^1.1.2",
+    "env-cmd": "^10.1.0",
     "ionicons": "^6.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -48,7 +49,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "build:dev": "env-cmd -f .env.development npm run build",
     "build": "react-scripts build",
+    "build:android": "ionic capacitor build android",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject"
   },
