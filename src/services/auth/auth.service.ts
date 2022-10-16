@@ -1,7 +1,7 @@
-import { api } from "../api";
+import { apiSlice } from "../api";
 import { LoginResponse, LoginRequest } from "./types";
 
-export const authEndpoints = api.injectEndpoints({
+export const authEndpoints = apiSlice.injectEndpoints({
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({

@@ -17,7 +17,7 @@ export function PublicRoute({component: Component ,restricted, ...rest}: PublicR
       {...rest}
       render={(props) =>
         loggedIn && restricted ? (
-          <Redirect to="/page/index" />
+          <Redirect to="/app/home" />
         ) : ( 
           <Component {...props}/>
         )
