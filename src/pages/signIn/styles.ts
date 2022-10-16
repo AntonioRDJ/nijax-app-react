@@ -1,4 +1,4 @@
-import { IonButton } from "@ionic/react";
+import { IonButton, IonThumbnail } from "@ionic/react";
 import styled from "styled-components";
 
 export const StyledContainer = styled("div")`
@@ -9,10 +9,8 @@ export const StyledContainer = styled("div")`
   height: 100%;
 `;
 
-export const Logo = styled("div")`
-  width: 200px;
-  height: 200px;
-  background-color: var(--ion-color-secondary);
+export const StyledIonThumbnail = styled(IonThumbnail)`
+  --size: 250px;
   margin-bottom: 3rem;
 `;
 

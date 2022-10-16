@@ -69,7 +69,7 @@ const SocialNetworkComponent = (props: SocialNetworkProps) => {
         <IonLabel position="floating">Rede Social</IonLabel>
         <IonSelect placeholder="Selecione" value={type} onIonChange={(e) => onChange && onChange({type: e.detail.value!, url})}>
           {Object.entries(SocialNetworkEnum).map(([key, value]) => (
-            <IonSelectOption value={key}>{value}</IonSelectOption>
+            <IonSelectOption key={key} value={key}>{value}</IonSelectOption>
           ))}
         </IonSelect>
       </IonItem>

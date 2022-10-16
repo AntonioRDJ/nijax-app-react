@@ -1,11 +1,11 @@
 /*eslint-disable no-restricted-globals*/
-import { IonContent, IonInput, IonItem, IonLabel,  IonPage, useIonRouter } from "@ionic/react";
+import { IonContent, IonImg, IonInput, IonItem, IonLabel,  IonPage, useIonRouter } from "@ionic/react";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useLoginMutation } from "../../services/auth/auth.service";
 import { useAppDispatch } from "../../store";
 import { saveUser } from "../../store/reducers/User/slice";
-import { Logo, SignInButton, SignUpButton, StyledContainer } from "./styles";
+import { SignInButton, SignUpButton, StyledContainer, StyledIonThumbnail } from "./styles";
 
 export const SignIn = () => {
   const [email, setEmail] = useState<string>();
@@ -26,7 +26,6 @@ export const SignIn = () => {
     try {
       const { data } = await loginEndpoint({email, password}).unwrap();
       dispatch(saveUser(data));
-      presentToast({message: "Login feito com sucesso.", color: "success"});
       router.push("/page/Index");
     } catch (error) {
       presentToast({message: "Falha ao logar, tente novamente."});
@@ -37,8 +36,10 @@ export const SignIn = () => {
     <IonPage>
       <IonContent fullscreen>
         <StyledContainer>
-          <Logo>Logo</Logo>
-          <IonItem >
+          <StyledIonThumbnail>
+            <IonImg src="/assets/images/logo.png" />
+          </StyledIonThumbnail>
+          <IonItem>
             <IonLabel position="floating">Email</IonLabel>
             <IonInput
               type="text"
