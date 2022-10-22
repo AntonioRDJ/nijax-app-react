@@ -13,7 +13,7 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { useLocation } from 'react-router-dom';
-import { exitOutline, homeOutline, personOutline, readerOutline } from 'ionicons/icons';
+import { exitOutline, homeOutline, personOutline, readerOutline, receiptOutline } from 'ionicons/icons';
 import './styles.module.css';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { BoxContent } from './styles';
@@ -23,6 +23,7 @@ interface AppPage {
   url: string;
   icon: string;
   title: string;
+  onlyProvider?: boolean;
 }
 
 const disabledPages = [
@@ -37,7 +38,7 @@ const appPages: AppPage[] = [
     icon: personOutline,
   },
   {
-    title: 'Pedidos',
+    title: 'Meus Pedidos',
     url: '/app/orders',
     icon: readerOutline,
   },
@@ -46,11 +47,18 @@ const appPages: AppPage[] = [
     url: '/app/home',
     icon: homeOutline,
   },
+  {
+    title: 'Encontrar Serviços',
+    url: '/app/find-orders',
+    icon: receiptOutline,
+    onlyProvider: true,
+  },
 ];
 
 const Menu: React.FC = () => {
   const location = useLocation();
   const userName = useAppSelector(state => state.user.nameToDisplay);
+  const isProvider = useAppSelector(state => state.user.isProvider);
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
@@ -72,9 +80,9 @@ const Menu: React.FC = () => {
                 Olá <strong>{userName}</strong>
               </IonText>
             </IonListHeader>
-            {/* <IonNote>hi@ionicframework.com</IonNote> */}
             {appPages.map((appPage, index) => {
-              return (
+              const showPage = !appPage.onlyProvider || appPage.onlyProvider && isProvider;
+              return showPage && (
                 <IonMenuToggle key={index} autoHide={false}>
                   <IonItem className={location.pathname === appPage.url ? 'selected' : ''} routerLink={appPage.url} routerDirection="none" lines="none" detail={false}>
                     <IonIcon slot="start" icon={appPage.icon} />

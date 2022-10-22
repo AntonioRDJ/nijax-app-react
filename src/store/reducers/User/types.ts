@@ -5,4 +5,5 @@ export interface UserState {
   accessToken?: string;
   user?: User;
   nameToDisplay?: string;
+  isProvider: boolean;
 };

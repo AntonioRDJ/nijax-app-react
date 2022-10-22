@@ -1,7 +1,7 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 
 
-export const Orders = () => {
+export const FindOrders = () => {
 
   return (
     <IonPage>
@@ -10,14 +10,13 @@ export const Orders = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Pedidos</IonTitle>
+          <IonTitle>Meus Pedidos</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
-        <div className="container">
-          <strong>Pedidos</strong>
-          <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+        <div className="container" onScroll={() => null}>
+          <h1>find orders works</h1>
         </div>
       </IonContent>
     </IonPage>

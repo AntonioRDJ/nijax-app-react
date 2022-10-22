@@ -20,3 +20,15 @@ export enum SocialNetworkEnum {
   LINKEDIN = "LINKEDIN",
   YOUTUBE = "YOUTUBE",
 };
+
+export const enum Status {
+  OPENED = "OPENED",
+  NEGOTIATION = "NEGOTIATION",
+  CLOSED = "CLOSED",
+}
+
+export enum StatusBR {
+  OPENED = "Em Aberto",
+  NEGOTIATION = "Em Negociação",
+  CLOSED = "Fechado",
+}

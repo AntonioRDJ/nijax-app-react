@@ -2,8 +2,9 @@ import { IonRouterOutlet, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import Menu from '../components/menu';
+import { FindOrders } from '../pages/findOrders';
 import { Home } from '../pages/home';
-import { Orders } from '../pages/orders';
+import { MyOrders } from '../pages/myOrders';
 import { ProfessionalSignUp } from '../pages/professionalSignUp';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/signIn';
@@ -20,7 +21,8 @@ export const Routes = () => {
         <IonRouterOutlet id="main">
           <PrivateRoute path="/app/home" exact={true} component={Home}/>
           <PrivateRoute path="/app/profile" exact={true} component={Profile}/>
-          <PrivateRoute path="/app/orders" exact={true} component={Orders}/>
+          <PrivateRoute path="/app/orders" exact={true} component={MyOrders}/>
+          <PrivateRoute path="/app/find-orders" exact={true} component={FindOrders} onlyProvider={true}/>
           <PublicRoute path="/login" exact={true} component={SignIn} restricted={true}/>
           <PublicRoute path="/signup" exact={true} component={SignUp} restricted={true}/>
           <PublicRoute path="/signup/professional" exact={true} component={ProfessionalSignUp} restricted={true}/>

@@ -1,4 +1,4 @@
-import { Service } from "../../utils/constants";
+import { Service, Status } from "../../utils/constants";
 
 export interface Order {
   id: string;
@@ -7,6 +7,7 @@ export interface Order {
   address: string;
   service: Service;
   radiusDistance: number;
+  status: Status;
 };
 
 export interface CreateOrderResponse {
@@ -21,4 +22,15 @@ export interface CreateOrderRequest {
   address: string;
   service: Service;
   radiusDistance: number;
+};
+
+export interface ListOrdersResponse {
+  data: {
+    orders: Order[];
+  }
+};
+
+export interface ListOrdersRequest {
+  limit: number;
+  offset: number;
 };
