@@ -1,6 +1,6 @@
 import { Service, Status } from "../../utils/constants";
 import { apiSlice } from "../api";
-import { CreateOrderRequest, CreateOrderResponse, ListOrdersRequest, ListOrdersResponse, Order } from "./types";
+import { CreateOrderRequest, CreateOrderResponse, GetOrderResponse, ListOrdersResponse, Order } from "./types";
 
 export const mockOrders: Order[] = [
   {
@@ -71,10 +71,18 @@ export const orderEndpoints = apiSlice.injectEndpoints({
         }
       },
       transformResponse: (response: ListOrdersResponse) => {
-        return mockOrders;
+        return response.data.orders;
+      },
+    }),
+    getOrder: builder.query<Order, string>({
+      query: (id) => ({
+        url: `v1/orders/${id}`,
+      }),
+      transformResponse: (response: GetOrderResponse) => {
+        return response.data.order;
       },
     }),
   }),
 });
 
-export const { useCreateOrderMutation, useListOrdersQuery } = orderEndpoints;
+export const { useCreateOrderMutation, useListOrdersQuery, useGetOrderQuery } = orderEndpoints;

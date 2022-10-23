@@ -9,12 +9,12 @@ import { Service, ServiceBR } from "../../utils/constants";
 
 const requiredFields = ["title", "description", "service", "address", "radiusDistance"];
 
-type OrderModalProps = {
+type CreateOrderModalProps = {
   open: boolean;
   onClose: () => void;
 }
 
-export const OrderModal = (props: OrderModalProps) => {
+export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const { open, onClose } = props;
   const [title, setTitle] = useState<string>();
   const [description, setDescription] = useState<string>();

@@ -1,5 +1,6 @@
 import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useState } from "react";
+import { OrderDetailsModal } from "../../components/orderDetailsModal";
 import { mockOrders, useListOrdersQuery } from "../../services/order/order.service";
 import { Order } from "../../services/order/types";
 import { ServiceBR, StatusBR } from "../../utils/constants";
@@ -15,7 +16,9 @@ const multiplyMock = (qtd: number) => {
 
 export const MyOrders = () => {
   const [page, setPage] = useState(1);
-  const [orders, setOrders] = useState<Order[]>(multiplyMock(5))
+  const [orders, setOrders] = useState<Order[]>(multiplyMock(5));
+  const [modalOpen, setModalOpen] = useState(false);
+  const [orderClicked, setOrderClicked] = useState<Order>();
   const { data, isLoading } = useListOrdersQuery(page);
 
   if(isLoading) {
@@ -23,8 +26,17 @@ export const MyOrders = () => {
       <LoadingComponent />
     );
   }
-  console.log("orders ", orders);
-  
+
+  const openOrderDetails = (order: Order) => {
+    setOrderClicked(order);
+    setModalOpen(true);
+  };
+
+  const closeOrderDetails = () => {
+    setOrderClicked(undefined);
+    setModalOpen(false);
+  };
+
   if(data?.length) {
     setOrders(oldOrders => [...oldOrders, ...data]);
   }
@@ -43,7 +55,7 @@ export const MyOrders = () => {
       <IonContent fullscreen>
         <div className="container" onScroll={() => null}>
           { orders?.map(order => (
-            <IonCard key={order.id} onClick={() => null}>
+            <IonCard key={order.id} onClick={() => openOrderDetails(order)}>
               <IonCardHeader>
                 <IonCardSubtitle>{StatusBR[order.status]}</IonCardSubtitle>
                 <IonCardTitle>{order.title}</IonCardTitle>
@@ -55,6 +67,7 @@ export const MyOrders = () => {
             </IonCard>
           ))}
         </div>
+        {orderClicked && <OrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked.id}/>}
       </IonContent>
     </IonPage>
   );
