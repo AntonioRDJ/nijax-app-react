@@ -63,7 +63,7 @@ export const orderEndpoints = apiSlice.injectEndpoints({
       query: (page) => {
         const offset = page > 1 ? page * 15 : 0;
         return {
-          url: 'v1/orders',
+          url: 'v1/order',
           params: {
             limit: 15,
             offset
@@ -76,7 +76,7 @@ export const orderEndpoints = apiSlice.injectEndpoints({
     }),
     getOrder: builder.query<Order, string>({
       query: (id) => ({
-        url: `v1/orders/${id}`,
+        url: `v1/order/${id}`,
       }),
       transformResponse: (response: GetOrderResponse) => {
         return response.data.order;
@@ -85,4 +85,4 @@ export const orderEndpoints = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreateOrderMutation, useListOrdersQuery, useGetOrderQuery } = orderEndpoints;
+export const { useCreateOrderMutation, useListOrdersQuery, useGetOrderQuery, useLazyListOrdersQuery } = orderEndpoints;

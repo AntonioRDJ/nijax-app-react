@@ -7,7 +7,7 @@ export interface Order {
   description: string;
   address: string;
   service: Service;
-  radiusDistance: number;
+  radiusDistance?: number;
   status: Status;
   owner?: User;
   candidates?: User[];
@@ -24,7 +24,7 @@ export interface CreateOrderRequest {
   description: string;
   address: string;
   service: Service;
-  radiusDistance: number;
+  // radiusDistance: number;
 };
 
 export interface ListOrdersResponse {

@@ -1,7 +1,7 @@
-import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useState } from "react";
 import { OrderDetailsModal } from "../../components/orderDetailsModal";
-import { mockOrders, useListOrdersQuery } from "../../services/order/order.service";
+import { mockOrders, useLazyListOrdersQuery } from "../../services/order/order.service";
 import { Order } from "../../services/order/types";
 import { ServiceBR, StatusBR } from "../../utils/constants";
 
@@ -19,8 +19,8 @@ export const MyOrders = () => {
   const [orders, setOrders] = useState<Order[]>(multiplyMock(5));
   const [modalOpen, setModalOpen] = useState(false);
   const [orderClicked, setOrderClicked] = useState<Order>();
-  const { data, isLoading } = useListOrdersQuery(page);
-
+  const [isInfiniteDisabled, setIsInfiniteDisabled] = useState(false);
+  const [getListOrder, { data, isLoading }] = useLazyListOrdersQuery();
   if(isLoading) {
     return (
       <LoadingComponent />
@@ -33,13 +33,17 @@ export const MyOrders = () => {
   };
 
   const closeOrderDetails = () => {
-    setOrderClicked(undefined);
     setModalOpen(false);
+    setOrderClicked(undefined);
   };
 
-  if(data?.length) {
-    setOrders(oldOrders => [...oldOrders, ...data]);
+  if(data?.length && data?.length !== (orders?.length - data.length )) {
+    setOrders(oldOrders => oldOrders ? [...oldOrders, ...data] : data);
   }
+
+  const loadData = (ev: any) => {
+    console.log("tem que carregar mais");
+  };
 
   return (
     <IonPage>
@@ -67,7 +71,17 @@ export const MyOrders = () => {
             </IonCard>
           ))}
         </div>
-        {orderClicked && <OrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked.id}/>}
+        <OrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id}/>
+        <IonInfiniteScroll
+          onIonInfinite={loadData}
+          threshold="100px"
+          disabled={isInfiniteDisabled}
+        >
+          <IonInfiniteScrollContent
+            loadingSpinner="bubbles"
+            loadingText="Loading more data..."
+          ></IonInfiniteScrollContent>
+        </IonInfiniteScroll>
       </IonContent>
     </IonPage>
   );

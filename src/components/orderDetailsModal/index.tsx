@@ -1,6 +1,5 @@
 import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
-import { useState } from "react";
 import { useGetOrderQuery } from "../../services/order/order.service";
 import { Order } from "../../services/order/types";
 import { Service, ServiceBR, Status } from "../../utils/constants";
@@ -44,15 +43,13 @@ const mockOrder: Order = {
 }
 
 type OrderDetailsModalProps = {
-  orderId: string;
+  orderId?: string;
   open: boolean;
   onClose: () => void;
 }
 
 export const OrderDetailsModal = (props: OrderDetailsModalProps) => {
   const { orderId, open, onClose } = props;
-  const [order] = useState(mockOrder);
-  // const { data: order, isLoading } = useGetOrderQuery(orderId);
 
   return (
     <IonModal isOpen={open}>
@@ -67,49 +64,64 @@ export const OrderDetailsModal = (props: OrderDetailsModalProps) => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonList style={{padding: "0 12px", overflow: "hidden"}}>
-          <IonItem>
-            <IonLabel position="floating">Título</IonLabel>
-            <IonInput
-              type="text"
-              value={order?.title}
-              readonly={true}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Descrição</IonLabel>
-            <IonInput
-              type="text"
-              value={order?.description}
-              readonly={true}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Serviço prestado *</IonLabel>
-            <IonInput
-              type="text"
-              value={ServiceBR[order.service]}
-              readonly={true}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Endereço</IonLabel>
-            <IonInput
-              type="text"
-              value={order?.address}
-              readonly={true}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Raio de procura (km)</IonLabel>
-            <IonInput
-              type="number"
-              value={order?.radiusDistance}
-              readonly={true}
-            ></IonInput>
-          </IonItem>
-        </IonList>
+        {orderId && <Content orderId={orderId}/> }
       </IonContent>
     </IonModal>
   );
+}
+
+const Content = ({orderId}: {orderId: string}) => {
+  const { data: order, isLoading } = useGetOrderQuery(orderId);
+
+  if(isLoading) {
+    return (
+      <>Carregando...</>
+    );
+  }
+
+  return (
+    <IonList style={{padding: "0 12px", overflow: "hidden"}}>
+      <IonItem>
+        <IonLabel position="floating">Título</IonLabel>
+        <IonInput
+          type="text"
+          value={order?.title}
+          readonly={true}
+        ></IonInput>
+      </IonItem>
+      <IonItem>
+        <IonLabel position="floating">Descrição</IonLabel>
+        <IonInput
+          type="text"
+          value={order?.description}
+          readonly={true}
+        ></IonInput>
+      </IonItem>
+      <IonItem>
+        <IonLabel position="floating">Serviço prestado *</IonLabel>
+        <IonInput
+          type="text"
+          value={order ? ServiceBR[order.service] : ""}
+          readonly={true}
+        ></IonInput>
+      </IonItem>
+      <IonItem>
+        <IonLabel position="floating">Endereço</IonLabel>
+        <IonInput
+          type="text"
+          value={order?.address}
+          readonly={true}
+        ></IonInput>
+      </IonItem>
+      {/* <IonItem>
+        <IonLabel position="floating">Raio de procura (km)</IonLabel>
+        <IonInput
+          type="number"
+          value={order?.radiusDistance}
+          readonly={true}
+        ></IonInput>
+      </IonItem> */}
+    </IonList>
+  );
+
 }
