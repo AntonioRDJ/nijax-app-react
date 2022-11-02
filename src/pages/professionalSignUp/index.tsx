@@ -34,8 +34,10 @@ export const ProfessionalSignUp = () => {
       return;
     }
 
+    const {confirmPassword, ...user} = signup;
+
     try {
-      const { data } = await createProvider({...signup, ...providerToCreate} as CreateProviderRequest).unwrap();
+      const { data } = await createProvider({...user, ...providerToCreate} as CreateProviderRequest).unwrap();
       presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
       dispatch(saveUser(data));
       router.push("/page/index", "root");

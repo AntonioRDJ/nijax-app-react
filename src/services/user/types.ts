@@ -15,6 +15,13 @@ export interface Provider {
   id: string;
   address: string;
   fantasyName?: string;
+  providerService: {
+    id: string;
+    service: {
+      id: number;
+      name: Service;
+    };
+  }[];
   experiences: Experience[];
   formations: Formation[];
   socialNetworks: SocialNetwork[];
@@ -35,7 +42,6 @@ export interface CreateUserRequest {
   birthDate: Date | string;
   cpfCnpj: number;
   password: string;
-  confirmPassword: string;
 };
 
 export interface CreateProviderRequest extends CreateUserRequest {

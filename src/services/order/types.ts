@@ -6,7 +6,10 @@ export interface Order {
   title: string;
   description: string;
   address: string;
-  service: Service;
+  service: {
+    id: number;
+    name: Service;
+  };
   radiusDistance?: number;
   status: Status;
   owner?: User;
@@ -32,6 +35,13 @@ export interface ListOrdersResponse {
     orders: Order[];
   }
 };
+
+export interface ListOrdersRequest  {
+  page: number;
+  limit: number;
+  service?: Service;
+  forProvider?: boolean;
+}
 
 export interface GetOrderResponse {
   data: {

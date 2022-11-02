@@ -1,52 +1,14 @@
 import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useGetOrderQuery } from "../../services/order/order.service";
-import { Order } from "../../services/order/types";
-import { Service, ServiceBR, Status } from "../../utils/constants";
-
-const mockOrder: Order = {
-  id: "asdasd",
-  title: "test mock",
-  description: "description test mock",
-  address: "rua sei la o qonde",
-  service: Service.AUTOMOBILES,
-  radiusDistance: 50,
-  status: Status.NEGOTIATION,
-  owner: {
-    id: "1111",
-    name: "Antonio",
-    isCompany: false,
-    birthDate: "25/05/2005",
-    cellphone: "13988888888",
-    cpfCpnj: 444444444444,
-    email: "antonio@email.com"
-  },
-  candidates: [
-    {
-      id: "11112222",
-      name: "Jose",
-      isCompany: true,
-      birthDate: "25/05/2010",
-      cellphone: "13988888999",
-      cpfCpnj: 444444444333,
-      email: "jose@email.com",
-      provider: {
-        id: "sadasdas",
-        fantasyName: "Empresa ponto com",
-        address: "dsasdasd dasd asdsad",
-        experiences: [],
-        formations: [],
-        socialNetworks: [],
-      }
-    }
-  ]
-}
+import { ServiceBR } from "../../utils/constants";
+import { LoadingComponent } from "../loadingComponent";
 
 type OrderDetailsModalProps = {
   orderId?: string;
   open: boolean;
   onClose: () => void;
-}
+};
 
 export const OrderDetailsModal = (props: OrderDetailsModalProps) => {
   const { orderId, open, onClose } = props;
@@ -75,7 +37,7 @@ const Content = ({orderId}: {orderId: string}) => {
 
   if(isLoading) {
     return (
-      <>Carregando...</>
+      <LoadingComponent />
     );
   }
 
@@ -101,7 +63,7 @@ const Content = ({orderId}: {orderId: string}) => {
         <IonLabel position="floating">Serviço prestado *</IonLabel>
         <IonInput
           type="text"
-          value={order ? ServiceBR[order.service] : ""}
+          value={order ? ServiceBR[order.service.name] : ""}
           readonly={true}
         ></IonInput>
       </IonItem>
@@ -123,5 +85,4 @@ const Content = ({orderId}: {orderId: string}) => {
       </IonItem> */}
     </IonList>
   );
-
-}
+};

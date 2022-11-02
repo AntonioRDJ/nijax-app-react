@@ -1,4 +1,5 @@
 import { User } from "../../../services/user/types";
+import { Service } from "../../../utils/constants";
 
 export interface UserState {
   loggedIn: boolean;
@@ -6,4 +7,5 @@ export interface UserState {
   user?: User;
   nameToDisplay?: string;
   isProvider: boolean;
+  service?: Service;
 };
