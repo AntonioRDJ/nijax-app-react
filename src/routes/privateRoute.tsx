@@ -4,10 +4,14 @@ import { useAppSelector } from "../store";
 
 interface PrivateRouteProps extends Omit<RouteProps, "component"> {
   component: React.FC<RouteComponentProps>;
+  onlyProvider?: boolean;
 }
 
-export function PrivateRoute({component: Component, ...rest}: PrivateRouteProps) {
+export function PrivateRoute({component: Component, onlyProvider, ...rest}: PrivateRouteProps) {
   const loggedIn = useAppSelector(state => state.user.loggedIn);
+  const isProvider = useAppSelector(state => state.user.isProvider);
+
+  const canView = loggedIn && (!onlyProvider || onlyProvider && isProvider);
 
   return (
     // Show the component only when the user is logged in
@@ -15,7 +19,7 @@ export function PrivateRoute({component: Component, ...rest}: PrivateRouteProps)
     <Route
       {...rest}
       render={(props) =>
-        loggedIn ? (
+        canView ? (
           <Component {...props}/>
         ) : ( 
           <Redirect to="/" />

@@ -57,11 +57,19 @@ export const SignUp = () => {
   };
 
   const handleConfirm = async (toNextPage: boolean) => {
-    const userToCreate = {isCompany, name, email, cellphone, birthDate, cpfCnpj, password, confirmPassword}; 
-    if(requiredFields.some(key => !userToCreate[key as keyof typeof userToCreate])) {
-      presentToast({message: "Por favor preencha todos os campos."});
+    if(!fieldsIsValid()) {
       return;
     }
+
+    const userToCreate: CreateUserRequest = {
+      isCompany,
+      name: name!,
+      email: email!,
+      cellphone: cellphone!,
+      birthDate: birthDate!,
+      cpfCnpj: cpfCnpj!,
+      password: password!,
+    };
 
     if(toNextPage) {
       goToNextPage();
@@ -69,7 +77,7 @@ export const SignUp = () => {
     }
 
     try {
-      const { data } = await createUser(userToCreate as CreateUserRequest).unwrap();
+      const { data } = await createUser(userToCreate).unwrap();
       presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
       dispatch(saveUser(data));
       router.push("/page/index", "root");
@@ -77,6 +85,15 @@ export const SignUp = () => {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
     }
   };
+
+  const fieldsIsValid = () => {
+    const reuiredFields = {isCompany, name, email, cellphone, birthDate, cpfCnpj, password, confirmPassword}; 
+    if(requiredFields.some(key => !reuiredFields[key as keyof typeof reuiredFields])) {
+      presentToast({message: "Por favor preencha todos os campos."});
+      return false;
+    }
+    return true;
+  }
 
   return (
     <IonPage>

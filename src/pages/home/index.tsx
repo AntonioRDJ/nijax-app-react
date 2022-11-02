@@ -1,6 +1,6 @@
 import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useState } from "react";
-import { OrderModal } from "../../components/orderModal";
+import { CreateOrderModal } from "../../components/createOrderModal";
 
 
 export const Home = () => {
@@ -41,7 +41,7 @@ export const Home = () => {
             </IonCardContent>
           </IonCard>
         </div>
-        <OrderModal open={modalOpen} onClose={() => setModalOpen(false)}/>
+        <CreateOrderModal open={modalOpen} onClose={() => setModalOpen(false)}/>
       </IonContent>
     </IonPage>
   );

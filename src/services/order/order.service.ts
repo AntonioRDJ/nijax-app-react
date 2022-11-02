@@ -1,5 +1,5 @@
 import { apiSlice } from "../api";
-import { CreateOrderRequest, CreateOrderResponse } from "./types";
+import { CreateOrderRequest, CreateOrderResponse, GetOrderResponse, ListOrdersRequest, ListOrdersResponse, Order } from "./types";
 
 export const orderEndpoints = apiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -10,7 +10,32 @@ export const orderEndpoints = apiSlice.injectEndpoints({
         body: order,
       }),
     }),
+    listOrders: builder.query<Order[], ListOrdersRequest>({
+      query: (filter) => {
+        const offset = filter.page > 1 ? (filter.page - 1) * filter.limit : 0;
+        return {
+          url: 'v1/order',
+          params: {
+            limit: filter.limit,
+            offset,
+            service: filter.service,
+            forProvider: filter.forProvider,
+          }
+        }
+      },
+      transformResponse: (response: ListOrdersResponse) => {
+        return response.data.orders;
+      },
+    }),
+    getOrder: builder.query<Order, string>({
+      query: (id) => ({
+        url: `v1/order/${id}`,
+      }),
+      transformResponse: (response: GetOrderResponse) => {
+        return response.data.order;
+      },
+    }),
   }),
 });
 
-export const { useCreateOrderMutation } = orderEndpoints;
+export const { useCreateOrderMutation, useListOrdersQuery, useGetOrderQuery, useLazyListOrdersQuery } = orderEndpoints;

@@ -7,6 +7,8 @@ export const initialState: UserState = {
   accessToken: undefined,
   user: undefined,
   nameToDisplay: undefined,
+  isProvider: false,
+  service: undefined,
 };
 
 export const userSlice = createSlice({
@@ -17,6 +19,10 @@ export const userSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.user = action.payload.user;
       state.nameToDisplay = action.payload.user.provider?.fantasyName || action.payload.user.name;
+      if(action.payload.user?.provider) {
+        state.isProvider = true;
+        state.service = action.payload.user.provider.providerService[0]?.service.name;
+      }
       state.loggedIn = true;
     },
     updateLoggedIn: (state, action: {payload: boolean, type: string}) => {

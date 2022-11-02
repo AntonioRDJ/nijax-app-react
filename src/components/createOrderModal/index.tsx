@@ -7,27 +7,27 @@ import { CreateOrderRequest } from "../../services/order/types";
 import { useAppDispatch } from "../../store";
 import { Service, ServiceBR } from "../../utils/constants";
 
-const requiredFields = ["title", "description", "service", "address", "radiusDistance"];
+const requiredFields = ["title", "description", "service", "address"];
 
-type OrderModalProps = {
+type CreateOrderModalProps = {
   open: boolean;
   onClose: () => void;
 }
 
-export const OrderModal = (props: OrderModalProps) => {
+export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const { open, onClose } = props;
   const [title, setTitle] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [service, setService] = useState<Service>();
   const [address, setAddress] = useState<string>();
-  const [radiusDistance, setRadiusDistance] = useState<number>();
+  // const [radiusDistance, setRadiusDistance] = useState<number>();
 
   const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
   const [createOrder] = useCreateOrderMutation();
 
   const handleConfirm = async () => {
-    const orderToCreate = {title, description, service, address, radiusDistance};
+    const orderToCreate = {title, description, service, address};
     if(requiredFields.some(key => !orderToCreate[key as keyof typeof orderToCreate])) {
       presentToast({message: "Por favor preencha todos os campos."});
       return;
@@ -88,7 +88,7 @@ export const OrderModal = (props: OrderModalProps) => {
               onIonChange={(e) => setAddress(e.detail.value!)}
             ></IonInput>
           </IonItem>
-          <IonItem>
+          {/* <IonItem>
             <IonLabel position="floating">Raio de procura (km)</IonLabel>
             <IonInput
               type="number"
@@ -97,7 +97,7 @@ export const OrderModal = (props: OrderModalProps) => {
               max={150}
               min={10}
             ></IonInput>
-          </IonItem>
+          </IonItem> */}
         </IonList>
       </IonContent>
       <IonFooter collapse="fade">
