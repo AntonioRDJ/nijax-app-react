@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
@@ -66,11 +66,10 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
           </IonItem>
           <IonItem>
             <IonLabel position="floating">Descrição</IonLabel>
-            <IonInput
-              type="text"
+            <IonTextarea
               value={description}
               onIonChange={(e) => setDescription(e.detail.value!)}
-            ></IonInput>
+            ></IonTextarea>
           </IonItem>
           <IonItem>
             <IonLabel position="floating">Serviço prestado *</IonLabel>

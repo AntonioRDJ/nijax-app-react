@@ -10,8 +10,6 @@ import { Formations } from "./formations";
 import { SocialNetworks } from "./socialNetworks";
 import { saveUser } from "../../store/reducers/User/slice";
 
-const requiredFields = ["address", "service"];
-
 export const ProfessionalSignUp = () => {
   const [fantasyName, setFantasyName] = useState<string>();
   const [address, setAddress] = useState<string>();
@@ -29,7 +27,7 @@ export const ProfessionalSignUp = () => {
 
   const handleConfirm = async () => {
     const providerToCreate = {fantasyName, address, service, experiences, formations, socialNetworks}; 
-    if(requiredFields.some(key => !providerToCreate[key as keyof typeof providerToCreate])) {
+    if(!fieldsIsValid()) {
       presentToast({message: "Por favor preencha os campos obrigatórios."});
       return;
     }
@@ -45,6 +43,22 @@ export const ProfessionalSignUp = () => {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
     }
   };
+
+  const fieldsIsValid = () => {
+    const addressValid = Boolean(address);
+    const serviceValid = Boolean(service);
+    const experiencesValid = experiences.length < 1 ? true : (
+      experiences.every(ex  => ex.title && ex.description)
+    );
+    const formationsValid = formations.length < 1 ? true : (
+      formations.every(ex  => ex.course && ex.startDate && ex.endDate && ex.institution)
+    );
+    const socialNetworksValid = socialNetworks.length < 1 ? true : (
+      socialNetworks.every(ex  => ex.type && ex.url)
+    );
+
+    return addressValid && serviceValid && experiencesValid && formationsValid && socialNetworksValid;
+  }
 
   return (
     <IonPage>
