@@ -28,7 +28,8 @@ interface AppPage {
 
 const disabledPages = [
   "/login",
-  "/signup"
+  "/signup",
+  "/signup/professional",
 ];
 
 const appPages: AppPage[] = [
@@ -81,7 +82,7 @@ const Menu: React.FC = () => {
               </IonText>
             </IonListHeader>
             {appPages.map((appPage, index) => {
-              const showPage = !appPage.onlyProvider || appPage.onlyProvider && isProvider;
+              const showPage = !appPage.onlyProvider || (appPage.onlyProvider && isProvider);
               return showPage && (
                 <IonMenuToggle key={index} autoHide={false}>
                   <IonItem className={location.pathname === appPage.url ? 'selected' : ''} routerLink={appPage.url} routerDirection="none" lines="none" detail={false}>

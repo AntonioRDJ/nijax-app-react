@@ -1,11 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Config } from "../config";
 import { RootState } from "../store";
-
-const baseUrl = process.env.REACT_APP_API_URL ?? "";
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: baseUrl,
+    baseUrl: Config.API_URL,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
       if(token) {

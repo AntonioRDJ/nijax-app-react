@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage"
 import { apiSlice } from "../services/api";
+import { viacepApi } from "../services/viacep/viacep.service";
 import rootReducer from "./reducers";
 
 const persistConfig = {
@@ -20,7 +21,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(apiSlice.middleware),
+    }).concat(apiSlice.middleware, viacepApi.middleware),
     preloadedState
   })
 }

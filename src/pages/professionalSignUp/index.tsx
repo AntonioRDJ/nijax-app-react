@@ -9,16 +9,22 @@ import { Experiences } from "./experiences";
 import { Formations } from "./formations";
 import { SocialNetworks } from "./socialNetworks";
 import { saveUser } from "../../store/reducers/User/slice";
+import { Address } from "../../services/viacep/types";
+import { validateCep } from "../../utils/validations";
+import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
 
 export const ProfessionalSignUp = () => {
   const [fantasyName, setFantasyName] = useState<string>();
-  const [address, setAddress] = useState<string>();
+  const [cep, setCep] = useState<string>();
+  const [number, setNumber] = useState<string>();
+  const [address, setAddress] = useState<Address>();
   const [service, setService] = useState<Service>();
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [formations, setFormations] = useState<Formation[]>([]);
   const [socialNetworks, setSocialNetworks] = useState<SocialNetwork[]>([]);
 
   const [createProvider] = useCreateProviderMutation();
+  const [getAddress] = useLazyGetAddressQuery();
 
   const signup = useAppSelector(state => state.signup);
   const dispatch = useAppDispatch();
@@ -26,7 +32,7 @@ export const ProfessionalSignUp = () => {
   const router = useIonRouter();
 
   const handleConfirm = async () => {
-    const providerToCreate = {fantasyName, address, service, experiences, formations, socialNetworks}; 
+    const providerToCreate = {fantasyName, ...address, service, number, experiences, formations, socialNetworks}; 
     if(!fieldsIsValid()) {
       presentToast({message: "Por favor preencha os campos obrigatórios."});
       return;
@@ -47,6 +53,9 @@ export const ProfessionalSignUp = () => {
   const fieldsIsValid = () => {
     const addressValid = Boolean(address);
     const serviceValid = Boolean(service);
+    const cepValid = Boolean(cep);
+    const numberValid = Boolean(number);
+
     const experiencesValid = experiences.length < 1 ? true : (
       experiences.every(ex  => ex.title && ex.description)
     );
@@ -57,7 +66,33 @@ export const ProfessionalSignUp = () => {
       socialNetworks.every(ex  => ex.type && ex.url)
     );
 
-    return addressValid && serviceValid && experiencesValid && formationsValid && socialNetworksValid;
+    return addressValid && serviceValid && cepValid && numberValid && experiencesValid && formationsValid && socialNetworksValid;
+  }
+
+  const handleBlurCep = async () => {
+    if(!validateCep(cep)) {
+      return;
+    }
+
+    try {
+      const data = await getAddress(cep!).unwrap();
+      console.log("data ", data);
+      
+      if(data.erro) {
+        return presentToast({message: "Cep não encontrado.", color: "warning"});
+      }
+
+      setAddress({
+        cep: data.cep,
+        street: data.logradouro,
+        district: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+      });
+      
+    } catch (error) {
+      presentToast({message: "Erro ao recuperar dados do cep informado.", color: "danger"});
+    }
   }
 
   return (
@@ -83,11 +118,53 @@ export const ProfessionalSignUp = () => {
           </IonItem>
 
           <IonItem>
-            <IonLabel position="floating">Endereço *</IonLabel>
+            <IonLabel position="floating">CEP</IonLabel>
             <IonInput
               type="text"
-              value={address}
-              onIonChange={(e) => setAddress(e.detail.value!)}
+              value={cep}
+              onIonChange={(e) => setCep(e.detail.value!)}
+              onIonBlur={handleBlurCep}
+            ></IonInput>
+          </IonItem>
+
+          <IonItem>
+            <IonLabel position="floating">Logradouro</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.street}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Bairro</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.district}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Cidade</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.city}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">UF</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.state}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Número</IonLabel>
+            <IonInput
+              type="text"
+              value={number}
+              onIonChange={(e) => setNumber(e.detail.value!)}
             ></IonInput>
           </IonItem>
 

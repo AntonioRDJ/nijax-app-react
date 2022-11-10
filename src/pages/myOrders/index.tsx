@@ -91,10 +91,10 @@ export const MyOrders = () => {
                   <IonCardHeader>
                     <IonCardSubtitle>{StatusBR[order.status]}</IonCardSubtitle>
                     <IonCardTitle>{order.title}</IonCardTitle>
-                    <IonCardSubtitle>{ServiceBR[order.service.name]}</IonCardSubtitle>
+                    <IonCardSubtitle>{ServiceBR[order.service]}</IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    <p>Endereço: {order.address}</p>
+                    <p>Endereço: {order.street}, {order.number} - {order.district}, {order.city}</p>
                   </IonCardContent>
                 </IonCard>
               ))}

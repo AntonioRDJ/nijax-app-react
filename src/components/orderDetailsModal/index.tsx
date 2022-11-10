@@ -63,18 +63,58 @@ const Content = ({orderId}: {orderId: string}) => {
         <IonLabel position="floating">Serviço prestado *</IonLabel>
         <IonInput
           type="text"
-          value={order ? ServiceBR[order.service.name] : ""}
+          value={order ? ServiceBR[order.service] : ""}
           readonly={true}
         ></IonInput>
       </IonItem>
       <IonItem>
-        <IonLabel position="floating">Endereço</IonLabel>
-        <IonInput
-          type="text"
-          value={order?.address}
-          readonly={true}
-        ></IonInput>
-      </IonItem>
+            <IonLabel position="floating">CEP</IonLabel>
+            <IonInput
+              type="text"
+              value={order?.cep}
+            ></IonInput>
+          </IonItem>
+
+          <IonItem>
+            <IonLabel position="floating">Logradouro</IonLabel>
+            <IonInput
+              type="text"
+              value={order?.street}
+              readonly={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Bairro</IonLabel>
+            <IonInput
+              type="text"
+              value={order?.district}
+              readonly={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Cidade</IonLabel>
+            <IonInput
+              type="text"
+              value={order?.city}
+              readonly={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">UF</IonLabel>
+            <IonInput
+              type="text"
+              value={order?.state}
+              readonly={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Número</IonLabel>
+            <IonInput
+              type="text"
+              value={order?.number}
+              readonly={true}
+            ></IonInput>
+          </IonItem>
       {/* <IonItem>
         <IonLabel position="floating">Raio de procura (km)</IonLabel>
         <IonInput
