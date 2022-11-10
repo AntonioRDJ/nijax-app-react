@@ -11,7 +11,7 @@ export function PrivateRoute({component: Component, onlyProvider, ...rest}: Priv
   const loggedIn = useAppSelector(state => state.user.loggedIn);
   const isProvider = useAppSelector(state => state.user.isProvider);
 
-  const canView = loggedIn && (!onlyProvider || onlyProvider && isProvider);
+  const canView = loggedIn && (!onlyProvider || (onlyProvider && isProvider));
 
   return (
     // Show the component only when the user is logged in

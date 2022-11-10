@@ -1,4 +1,4 @@
-import { regexCellphone, regexCNPJorCPJ, regexEmail, regexPassword } from "./regex";
+import { regexCellphone, regexCep, regexCNPJorCPJ, regexEmail, regexPassword } from "./regex";
 
 export const validateEmail = (email?: string) => {
   return Boolean(email?.match(regexEmail));
@@ -31,4 +31,8 @@ export const validateBirthDate = (birthDate?: string | Date) => {
   }
 
   return age >= 18;
+}
+
+export const validateCep = (cep?: number | string) => {
+  return Boolean(cep?.toString().match(regexCep));
 }

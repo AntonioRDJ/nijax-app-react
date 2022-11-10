@@ -46,8 +46,13 @@ export interface CreateUserRequest {
 
 export interface CreateProviderRequest extends CreateUserRequest {
   fantasyName?: string;
-  address: string;
   service: Service;
+  cep: string;
+  street: string;
+  district: string;
+  city: string;
+  state: string;
+  number: string;
   experiences?: Experience[];
   formations?: Formation[];
   socialNetworks?: SocialNetwork[];

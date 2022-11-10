@@ -5,11 +5,13 @@ export interface Order {
   id: string;
   title: string;
   description: string;
-  address: string;
-  service: {
-    id: number;
-    name: Service;
-  };
+  cep: string;
+  street: string;
+  district: string;
+  city: string;
+  state: string;
+  number: string;
+  service: Service;
   radiusDistance?: number;
   status: Status;
   owner?: User;
@@ -25,7 +27,12 @@ export interface CreateOrderResponse {
 export interface CreateOrderRequest {
   title: string;
   description: string;
-  address: string;
+  cep: string;
+  street: string;
+  district: string;
+  city: string;
+  state: string;
+  number: string;
   service: Service;
   // radiusDistance: number;
 };

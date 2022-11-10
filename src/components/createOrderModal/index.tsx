@@ -4,10 +4,13 @@ import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useCreateOrderMutation } from "../../services/order/order.service";
 import { CreateOrderRequest } from "../../services/order/types";
+import { Address } from "../../services/viacep/types";
+import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
 import { useAppDispatch } from "../../store";
 import { Service, ServiceBR } from "../../utils/constants";
+import { validateCep } from "../../utils/validations";
 
-const requiredFields = ["title", "description", "service", "address"];
+const requiredFields = ["title", "description", "service", "address", "cep", "number"];
 
 type CreateOrderModalProps = {
   open: boolean;
@@ -19,19 +22,29 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const [title, setTitle] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [service, setService] = useState<Service>();
-  const [address, setAddress] = useState<string>();
+  const [cep, setCep] = useState<string>();
+  const [number, setNumber] = useState<string>();
+
+  const [address, setAddress] = useState<Address>();
   // const [radiusDistance, setRadiusDistance] = useState<number>();
 
   const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
   const [createOrder] = useCreateOrderMutation();
+  const [getAddress] = useLazyGetAddressQuery();
 
   const handleConfirm = async () => {
-    const orderToCreate = {title, description, service, address};
+    let orderToCreate: any = {title, description, service, cep, number, address};
     if(requiredFields.some(key => !orderToCreate[key as keyof typeof orderToCreate])) {
       presentToast({message: "Por favor preencha todos os campos."});
       return;
     }
+
+    orderToCreate = {
+      ...orderToCreate,
+      ...orderToCreate.address,
+    }
+    delete orderToCreate.address;
 
     try {
       const { data } = await createOrder(orderToCreate as CreateOrderRequest).unwrap();
@@ -41,6 +54,30 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
     }
   };
+
+  const handleBlurCep = async () => {
+    if(!validateCep(cep)) {
+      return
+    }
+    try {
+      const data = await getAddress(cep!).unwrap();
+
+      if(data.erro) {
+        return presentToast({message: "Cep não encontrado.", color: "warning"});
+      }
+
+      setAddress({
+        cep: data.cep,
+        street: data.logradouro,
+        district: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+      });
+      
+    } catch (error) {
+      presentToast({message: "Erro ao recuperar dados do cep informado.", color: "danger"});
+    }
+  }
 
   return (
     <IonModal isOpen={open}>
@@ -80,11 +117,53 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
             </IonSelect>
           </IonItem>
           <IonItem>
-            <IonLabel position="floating">Endereço</IonLabel>
+            <IonLabel position="floating">CEP</IonLabel>
             <IonInput
               type="text"
-              value={address}
-              onIonChange={(e) => setAddress(e.detail.value!)}
+              value={cep}
+              onIonChange={(e) => setCep(e.detail.value!)}
+              onIonBlur={handleBlurCep}
+            ></IonInput>
+          </IonItem>
+
+          <IonItem>
+            <IonLabel position="floating">Logradouro</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.street}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Bairro</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.district}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Cidade</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.city}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">UF</IonLabel>
+            <IonInput
+              type="text"
+              value={address?.state}
+              disabled={true}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Número</IonLabel>
+            <IonInput
+              type="text"
+              value={number}
+              onIonChange={(e) => setNumber(e.detail.value!)}
             ></IonInput>
           </IonItem>
           {/* <IonItem>
