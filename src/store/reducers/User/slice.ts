@@ -21,7 +21,7 @@ export const userSlice = createSlice({
       state.nameToDisplay = action.payload.user.provider?.fantasyName || action.payload.user.name;
       if(action.payload.user?.provider) {
         state.isProvider = true;
-        state.service = action.payload.user.provider.providerService[0]?.service.name;
+        state.service = action.payload.user.provider.service;
       }
       state.loggedIn = true;
     },

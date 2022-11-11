@@ -54,6 +54,12 @@ const appPages: AppPage[] = [
     icon: receiptOutline,
     onlyProvider: true,
   },
+  {
+    title: 'Serviços Aplicados',
+    url: '/app/applied-orders',
+    icon: receiptOutline,
+    onlyProvider: true,
+  },
 ];
 
 const Menu: React.FC = () => {

@@ -106,6 +106,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
             <IonTextarea
               value={description}
               onIonChange={(e) => setDescription(e.detail.value!)}
+              autoGrow={true}
             ></IonTextarea>
           </IonItem>
           <IonItem>

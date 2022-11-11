@@ -1,16 +1,17 @@
 import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
 import { useCallback, useEffect, useState } from "react";
-import { MyOrderDetailsModal } from "../../components/myOrderDetailsModal";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useLazyListOrdersQuery } from "../../services/order/order.service";
 import { Order } from "../../services/order/types";
 import { ServiceBR, StatusBR } from "../../utils/constants";
 import debounce from "lodash.debounce";
 import { LoadingComponent } from "../../components/loadingComponent";
+import { useAppSelector } from "../../store";
+import { ProfessionalOrderDetailsModal } from "../../components/professionalOrderDetailsModal";
 
 const limit = 15;
 
-export const MyOrders = () => {
+export const AppliedOrders = () => {
   const [page, setPage] = useState(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -18,6 +19,7 @@ export const MyOrders = () => {
   const [orderClicked, setOrderClicked] = useState<Order>();
   const [isInfiniteDisabled, setIsInfiniteDisabled] = useState(false);
 
+  const providerService = useAppSelector(state => state.user.service!);
   const [getListOrder] = useLazyListOrdersQuery();
   const { presentToast } = useGlobal();
 
@@ -42,7 +44,7 @@ export const MyOrders = () => {
 
   const getListOrderRequest = async (page: number) => {
     try {
-      const data = await getListOrder({page, limit}).unwrap();
+      const data = await getListOrder({page, limit, forProvider: true, onlyCandidate: true}).unwrap();
       setOrders(oldOrders => [...oldOrders, ...data]);
       setIsInfiniteDisabled(data.length < limit);
     } catch (error) {
@@ -76,7 +78,7 @@ export const MyOrders = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Meus Pedidos</IonTitle>
+          <IonTitle>Serviços Aplicados</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -99,7 +101,7 @@ export const MyOrders = () => {
                 </IonCard>
               ))}
             </div>
-            <MyOrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id}/>
+            <ProfessionalOrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id} disableApplyButton={true}/>
             <IonInfiniteScroll
               onIonInfinite={handleInfiniteScroll}
               threshold="100px"
