@@ -1,5 +1,5 @@
 import { Service, Status } from "../../utils/constants";
-import { User } from "../user/types";
+import { Provider, User } from "../user/types";
 
 export interface Order {
   id: string;
@@ -14,8 +14,12 @@ export interface Order {
   service: Service;
   radiusDistance?: number;
   status: Status;
-  owner?: User;
-  candidates?: User[];
+  user?: User;
+  candidacy?: Candidacy[];
+};
+
+export interface Candidacy {
+  provider: Provider;
 };
 
 export interface CreateOrderResponse {
@@ -48,6 +52,7 @@ export interface ListOrdersRequest  {
   limit: number;
   service?: Service;
   forProvider?: boolean;
+  onlyCandidate?: boolean;
 }
 
 export interface GetOrderResponse {

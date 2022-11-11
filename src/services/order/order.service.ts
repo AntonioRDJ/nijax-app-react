@@ -20,6 +20,7 @@ export const orderEndpoints = apiSlice.injectEndpoints({
             offset,
             service: filter.service,
             forProvider: filter.forProvider,
+            onlyCandidate: filter.onlyCandidate,
           }
         }
       },
@@ -35,7 +36,14 @@ export const orderEndpoints = apiSlice.injectEndpoints({
         return response.data.order;
       },
     }),
+
+    applyInOrder: builder.mutation<any, string>({
+      query: (orderId) => ({
+        method: "PATCH",
+        url: `v1/order/set-candidacy/${orderId}`,
+      }),
+    }),
   }),
 });
 
-export const { useCreateOrderMutation, useListOrdersQuery, useGetOrderQuery, useLazyListOrdersQuery } = orderEndpoints;
+export const { useCreateOrderMutation, useListOrdersQuery, useGetOrderQuery, useLazyListOrdersQuery, useApplyInOrderMutation } = orderEndpoints;

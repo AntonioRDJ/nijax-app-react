@@ -1,6 +1,5 @@
 import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
 import { useCallback, useEffect, useState } from "react";
-import { OrderDetailsModal } from "../../components/orderDetailsModal";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useLazyListOrdersQuery } from "../../services/order/order.service";
 import { Order } from "../../services/order/types";
@@ -8,6 +7,7 @@ import { ServiceBR, StatusBR } from "../../utils/constants";
 import debounce from "lodash.debounce";
 import { LoadingComponent } from "../../components/loadingComponent";
 import { useAppSelector } from "../../store";
+import { ProfessionalOrderDetailsModal } from "../../components/professionalOrderDetailsModal";
 
 const limit = 15;
 
@@ -101,7 +101,7 @@ export const FindOrders = () => {
                 </IonCard>
               ))}
             </div>
-            <OrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id}/>
+            <ProfessionalOrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id}/>
             <IonInfiniteScroll
               onIonInfinite={handleInfiniteScroll}
               threshold="100px"

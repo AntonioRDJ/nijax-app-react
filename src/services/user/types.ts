@@ -13,18 +13,18 @@ export interface User {
 
 export interface Provider {
   id: string;
-  address: string;
+  cep: string;
+  street: string;
+  district: string;
+  city: string;
+  state: string;
+  number: string;
   fantasyName?: string;
-  providerService: {
-    id: string;
-    service: {
-      id: number;
-      name: Service;
-    };
-  }[];
+  service: Service;
   experiences: Experience[];
   formations: Formation[];
   socialNetworks: SocialNetwork[];
+  user?: User;
 };
 
 export interface CreateUserResponse {
