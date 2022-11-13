@@ -19,8 +19,12 @@ export interface Order {
 };
 
 export interface Candidacy {
-  provider: Provider;
+  provider: CandidacyProvider;
 };
+
+export interface CandidacyProvider extends Provider {
+  user: User;
+}
 
 export interface CreateOrderResponse {
   data: {

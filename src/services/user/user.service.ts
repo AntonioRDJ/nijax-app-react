@@ -1,5 +1,5 @@
 import { apiSlice } from "../api";
-import { CreateProviderRequest, CreateUserRequest, CreateUserResponse } from "./types";
+import { CreateProviderRequest, CreateUserRequest, CreateUserResponse, User } from "./types";
 
 export const userEndpoints = apiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -32,6 +32,11 @@ export const userEndpoints = apiSlice.injectEndpoints({
         url: `v1/user/by-cpf-cnpj/${cpfCnpj}`,
       }),
     }),
+    getByUserId: builder.query<{data: {user: User}}, string>({
+      query: (userId) => ({
+        url: `v1/user/${userId}`,
+      }),
+    }),
   }),
 });
 
@@ -41,4 +46,5 @@ export const {
   useLazyVerifyByEmailQuery,
   useLazyVerifyByCellphoneQuery,
   useLazyVerifyByCpfCnpjQuery,
+  useLazyGetByUserIdQuery,
 } = userEndpoints;

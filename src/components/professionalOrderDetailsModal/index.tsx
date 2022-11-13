@@ -49,8 +49,6 @@ const Content = ({orderId, disableApplyButton}: {orderId: string, disableApplyBu
     );
   }
 
-  // const alreadyIsCandidacy = order user?.id;
-
   const candandacyInOrder = async () => {
     try {
       present({
