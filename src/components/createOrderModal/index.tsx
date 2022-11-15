@@ -26,7 +26,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const [number, setNumber] = useState<string>();
 
   const [address, setAddress] = useState<Address>();
-  // const [radiusDistance, setRadiusDistance] = useState<number>();
+  const [distance, setDistance] = useState<number>();
 
   const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
@@ -34,7 +34,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const [getAddress] = useLazyGetAddressQuery();
 
   const handleConfirm = async () => {
-    let orderToCreate: any = {title, description, service, cep, number, address};
+    let orderToCreate: any = {title, description, service, cep, number, address, distance};
     if(requiredFields.some(key => !orderToCreate[key as keyof typeof orderToCreate])) {
       presentToast({message: "Por favor preencha todos os campos."});
       return;
@@ -43,7 +43,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
     orderToCreate = {
       ...orderToCreate,
       ...orderToCreate.address,
-    }
+    };
     delete orderToCreate.address;
 
     try {
@@ -167,16 +167,16 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
               onIonChange={(e) => setNumber(e.detail.value!)}
             ></IonInput>
           </IonItem>
-          {/* <IonItem>
+          <IonItem>
             <IonLabel position="floating">Raio de procura (km)</IonLabel>
             <IonInput
               type="number"
-              value={radiusDistance}
-              onIonChange={(e) => setRadiusDistance(parseInt(e.detail.value!))}
+              value={distance}
+              onIonChange={(e) => setDistance(parseInt(e.detail.value!))}
               max={150}
-              min={10}
+              min={1}
             ></IonInput>
-          </IonItem> */}
+          </IonItem>
         </IonList>
       </IonContent>
       <IonFooter collapse="fade">

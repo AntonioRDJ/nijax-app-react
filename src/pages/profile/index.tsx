@@ -7,7 +7,6 @@ import { useLazyGetByUserIdQuery } from "../../services/user/user.service";
 import { useAppSelector } from "../../store";
 import { ServiceBR } from "../../utils/constants";
 
-
 export const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User>();
