@@ -1,9 +1,11 @@
 import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonCard, IonCardHeader, IonCardTitle } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
+import { useState } from "react";
 import { useGetOrderQuery } from "../../services/order/order.service";
-import { Candidacy } from "../../services/order/types";
+import { Candidacy, CandidacyProvider } from "../../services/order/types";
 import { ServiceBR, StatusBR } from "../../utils/constants";
 import { LoadingComponent } from "../loadingComponent";
+import { ProfessionalDetailsModal } from "../professionalDetailsModal";
 
 type MyOrderDetailsModalProps = {
   orderId?: string;
@@ -35,11 +37,23 @@ export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
 
 const Content = ({orderId}: {orderId: string}) => {
   const { data: order, isLoading } = useGetOrderQuery(orderId);
+  const [providerSelected, setProviderSelected] = useState<CandidacyProvider>();
+  const [openProfessionalModal, setOpenProfessionalModal] = useState(false);
 
   if(isLoading) {
     return (
       <LoadingComponent />
     );
+  }
+
+  const handleOpenProfessionalModal = (provider: CandidacyProvider) => {
+    setProviderSelected(provider);
+    setOpenProfessionalModal(true);
+  }
+
+  const handleCloseProfessionalModal = () => {
+    setOpenProfessionalModal(false);
+    setProviderSelected(undefined);
   }
 
   return (
@@ -135,24 +149,27 @@ const Content = ({orderId}: {orderId: string}) => {
         </IonItem> */}
       </IonList>
 
-      <CandidateList candidates={order!.candidacy ?? []}/>
+      <CandidateList candidates={order!.candidacy ?? []} onClickCandidate={handleOpenProfessionalModal}/>
+
+      <ProfessionalDetailsModal provider={providerSelected} open={openProfessionalModal} onClose={handleCloseProfessionalModal}/>
     </>
   );
 };
 
 type CandidateListProps = {
   candidates: Candidacy[];
+  onClickCandidate: (provider: CandidacyProvider) => void;
 }
 
 export const CandidateList = (props: CandidateListProps) => {
-  const { candidates } = props;
+  const { candidates, onClickCandidate } = props;
 
   return (
     <div style={{padding: "0 12px", marginTop: "24px"}}>
       <h4>Candidados ao pedido</h4>
       <div style={{display: "flex", flexDirection: "column"}}>
         {candidates.map(candidate => (
-          <IonCard>
+          <IonCard key={candidate.provider.id} onClick={() => onClickCandidate(candidate.provider)}>
             <IonCardHeader>
               <IonCardTitle>{candidate.provider.fantasyName || candidate.provider.user?.name}</IonCardTitle>
             </IonCardHeader>

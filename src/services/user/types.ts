@@ -6,7 +6,7 @@ export interface User {
   email: string;
   cellphone: string;
   birthDate: Date | string;
-  cpfCpnj: number;
+  cpfCnpj: number;
   isCompany: boolean;
   provider?: Provider;
 };

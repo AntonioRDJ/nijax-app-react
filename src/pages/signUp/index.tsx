@@ -83,7 +83,7 @@ export const SignUp = () => {
       isCompany,
       name: name!,
       email: email!,
-      cellphone: cellphone!,
+      cellphone: cellphone!.replace(/[^\d]/g,""),
       birthDate: birthDate!,
       cpfCnpj: cpfCnpj!,
       password: password!,
@@ -217,6 +217,7 @@ export const SignUp = () => {
               value={cellphone}
               onIonChange={(e) => setCellphone(e.detail.value!)}
               onIonInput={() => resetError("cellphone")}
+              placeholder="(xx) xxxxx-xxxx"
             ></IonInput>
             <IonNote slot="error">
               { errors?.cellphone ? (

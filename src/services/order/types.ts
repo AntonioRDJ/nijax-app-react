@@ -12,15 +12,19 @@ export interface Order {
   state: string;
   number: string;
   service: Service;
-  radiusDistance?: number;
+  distance: number;
   status: Status;
   user?: User;
   candidacy?: Candidacy[];
 };
 
 export interface Candidacy {
-  provider: Provider;
+  provider: CandidacyProvider;
 };
+
+export interface CandidacyProvider extends Provider {
+  user: User;
+}
 
 export interface CreateOrderResponse {
   data: {
@@ -38,7 +42,7 @@ export interface CreateOrderRequest {
   state: string;
   number: string;
   service: Service;
-  // radiusDistance: number;
+  distance: number;
 };
 
 export interface ListOrdersResponse {
