@@ -1,25 +1,57 @@
-import { IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
-import { useState } from "react";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonLoading, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
+import { checkmark, pencil } from "ionicons/icons";
+import { useEffect, useState } from "react";
 import { LoadingComponent } from "../../components/loadingComponent";
 import { useGlobal } from "../../contexts/GlobalContext";
-import { Provider, User } from "../../services/user/types";
-import { useLazyGetByUserIdQuery } from "../../services/user/user.service";
-import { useAppSelector } from "../../store";
+import { Experience, Formation, Provider, SocialNetwork, User } from "../../services/user/types";
+import { useLazyGetByUserIdQuery, useLazyVerifyByCellphoneQuery, useLazyVerifyByCpfCnpjQuery, useLazyVerifyByEmailQuery, useUpdateUserMutation } from "../../services/user/user.service";
+import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { updateUser as updateUserAction } from "../../store/reducers/User/slice";
 import { ServiceBR } from "../../utils/constants";
+import { validateBirthDate, validateCellphone, validateCep, validateCpfCnpj, validateEmail } from "../../utils/validations";
+import { Experiences } from "../professionalSignUp/experiences";
+import { Formations } from "../professionalSignUp/formations";
+import { SocialNetworks } from "../professionalSignUp/socialNetworks";
+
+type UserErrors = {
+  name: boolean;
+  email: boolean;
+  emailExists: boolean;
+  cellphone: boolean;
+  cellphoneExists: boolean;
+  cpfCnpj: boolean;
+  cpfCnpjExists: boolean;
+  birthDate: boolean;
+};
+
+type ProviderErrors = {
+
+};
 
 export const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User>();
+  const [isEditing, setIsEditing]  = useState(false);
+  const [userEdit, setUserEdit] = useState<User>();
+  const [userErrors, setUserErrors] = useState<UserErrors>();
 
-  const userId = useAppSelector(state => state.user.user?.id!);
+  const userId = useAppSelector(state => state.user?.user?.id!);
   const [getUser] = useLazyGetByUserIdQuery();
   const { presentToast } = useGlobal();
+  const [present, dismiss] = useIonLoading();
+  const dispatch = useAppDispatch();
+  const [verifyEmail] = useLazyVerifyByEmailQuery();
+  const [verifyCellphone] = useLazyVerifyByCellphoneQuery();
+  const [verifyCpfCnpj] = useLazyVerifyByCpfCnpjQuery();
+  const [updateUser] = useUpdateUserMutation();
 
   useIonViewWillEnter(async () => {
     try {
       setLoading(true);
       const userData = await getUser(userId).unwrap();
       setUser(userData.data.user);
+      setUserEdit(userData.data.user);
     } catch (error) {
       presentToast({message: "Ocorreu um erro ao carregar os dados."})
     } finally {
@@ -29,8 +61,107 @@ export const Profile = () => {
 
   useIonViewDidLeave(() => {
     setUser(undefined);
+    setUserEdit(undefined);
+    setIsEditing(false);
     setLoading(false);
   });
+
+  const handleSaveEdit = async () => {
+    if(!await validateUser()) {
+      return;
+    }
+
+    if(userEdit?.isCompany && !await validateProvider()) {
+      return;
+    }
+    
+    try {
+      present({
+        spinner: "crescent",
+      });
+      const { data } = await updateUser(userEdit!).unwrap();
+      presentToast({message: "Alterações realizadas com sucesso.", color: "success"});
+      dispatch(updateUserAction(data.user));
+      setIsEditing(false);
+    } catch (error) {
+      presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
+    } finally {
+      dismiss();
+    }
+
+  }
+
+  const handleChangeUserEdit = (field: keyof User, value: any) => {
+    setUserEdit((oldEdit) => ({
+      ...oldEdit as User,
+      [field]: value,
+    }));
+  }
+
+  const validateUser = async () => {
+    const nameValid = Boolean(userEdit?.name);
+    const emailValid = validateEmail(userEdit?.email);
+    const cellphoneValid = validateCellphone(userEdit?.cellphone);
+    const birthDateValid = validateBirthDate(userEdit?.birthDate);
+    const cpfCnpjValid = validateCpfCnpj(userEdit?.cpfCnpj);
+    let emailExistsValid = true;
+    let cellphoneExistsValid = true;
+    let cpfCnpjExistsValid = true;
+
+    if(emailValid && userEdit?.email != user?.email) {
+      try {
+        await verifyEmail(userEdit?.email!).unwrap();
+        emailExistsValid = false;
+      } catch (error) {}
+    }
+
+    if(cellphoneValid && userEdit?.cellphone != user?.cellphone) {
+      try {
+        await verifyCellphone(userEdit?.cellphone!).unwrap();
+        cellphoneExistsValid = false;
+      } catch (error) {}
+    }
+
+    if(cpfCnpjValid && userEdit?.cpfCnpj != user?.cpfCnpj) {
+      try {
+        await verifyCpfCnpj(userEdit?.cpfCnpj!).unwrap();
+        cpfCnpjExistsValid = false;
+      } catch (error) {}
+    }
+
+    setUserErrors({
+      name: !nameValid,
+      email: !emailValid,
+      emailExists: !emailExistsValid,
+      cellphone: !cellphoneValid,
+      cellphoneExists: !cellphoneExistsValid,
+      birthDate: !birthDateValid,
+      cpfCnpj: !cpfCnpjValid,
+      cpfCnpjExists: !cpfCnpjExistsValid,
+    });
+    
+    return nameValid && emailValid && cellphoneValid && birthDateValid && cpfCnpjValid && emailExistsValid && cellphoneExistsValid && cpfCnpjExistsValid;
+  }
+
+  const validateProvider = () => {
+    const streetValid = Boolean(userEdit?.provider?.street);
+    const districtValid = Boolean(userEdit?.provider?.district);
+    const cepValid = Boolean(userEdit?.provider?.cep);
+    const numberValid = Boolean(userEdit?.provider?.number);
+    const serviceValid = Boolean(userEdit?.provider?.service);
+
+    const experiencesValid = userEdit?.provider?.experiences &&  userEdit.provider.experiences.length < 1 ? true : (
+      userEdit?.provider?.experiences.every(ex  => ex.title && ex.description)
+    );
+    const formationsValid = userEdit?.provider?.formations && userEdit.provider.formations.length < 1 ? true : (
+      userEdit?.provider?.formations.every(ex  => ex.course && ex.startDate && ex.endDate && ex.institution)
+    );
+    const socialNetworksValid = userEdit?.provider?.socialNetworks && userEdit.provider.socialNetworks.length < 1 ? true : (
+      userEdit?.provider?.socialNetworks.every(ex  => ex.type && ex.url)
+    );
+
+    return streetValid && districtValid && serviceValid && cepValid && numberValid && experiencesValid && formationsValid && socialNetworksValid;
+  }
 
   return (
     <IonPage>
@@ -38,6 +169,17 @@ export const Profile = () => {
         <IonToolbar>
           <IonButtons slot="start">
             <IonMenuButton />
+          </IonButtons>
+          <IonButtons slot="end">
+            {isEditing ? (
+              <IonButton onClick={handleSaveEdit}>
+                <IonIcon slot="icon-only" icon={checkmark}></IonIcon>
+              </IonButton>
+            ) : (
+              <IonButton onClick={() => setIsEditing(true)}>
+                <IonIcon slot="icon-only" icon={pencil}></IonIcon>
+              </IonButton>
+            )}
           </IonButtons>
           <IonTitle>Perfil</IonTitle>
         </IonToolbar>
@@ -49,8 +191,20 @@ export const Profile = () => {
         ) : (
           <div className="container">
             <>
-              {user && <UserContent user={user} />}
-              {user?.provider && <ProviderContent provider={user.provider} />}
+              {userEdit && (
+                <UserContent
+                  user={userEdit}
+                  isEditing={isEditing}
+                  onChangeUser={handleChangeUserEdit}
+                />
+              )}
+              {userEdit?.provider && (
+                <ProviderContent
+                  provider={userEdit.provider}
+                  isEditing={isEditing}
+                  onChangeProvider={handleChangeUserEdit}
+                /> 
+              )}
             </>
           </div>
         )}
@@ -59,7 +213,14 @@ export const Profile = () => {
   );
 };
 
-const UserContent = ({user}: {user: User}) => {
+type UserContentProps = {
+  user: User;
+  isEditing: boolean;
+  onChangeUser: (field: keyof User, value: any) => void;
+}
+
+const UserContent = (props: UserContentProps) => {
+  const {user, isEditing, onChangeUser} = props;
 
   return (
     <>
@@ -69,7 +230,8 @@ const UserContent = ({user}: {user: User}) => {
           <IonInput
             type="text"
             value={user.name}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => onChangeUser("name", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -77,7 +239,8 @@ const UserContent = ({user}: {user: User}) => {
           <IonInput
             type="text"
             value={user.email}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => onChangeUser("email", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -85,7 +248,8 @@ const UserContent = ({user}: {user: User}) => {
           <IonInput
             type="text"
             value={user.cellphone}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => onChangeUser("cellphone", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -93,7 +257,8 @@ const UserContent = ({user}: {user: User}) => {
           <IonInput
             type="text"
             value={new Date(user.birthDate).toLocaleDateString()}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => onChangeUser("birthDate", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -101,7 +266,8 @@ const UserContent = ({user}: {user: User}) => {
           <IonInput
             type="text"
             value={user.cpfCnpj}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => onChangeUser("cpfCnpj", e.detail.value!)}
           ></IonInput>
         </IonItem>
       </IonList>
@@ -109,17 +275,86 @@ const UserContent = ({user}: {user: User}) => {
   );
 }
 
-const ProviderContent = ({provider}: {provider: Provider}) => {
+
+type ProviderContentProps = {
+  provider: Provider;
+  isEditing: boolean;
+  onChangeProvider: (field: keyof User, value: any) => void;
+}
+
+const ProviderContent = (props: ProviderContentProps) => {
+  const {provider, isEditing, onChangeProvider} = props;
+  const [experiences, setExperiences] = useState<Experience[]>(provider.experiences);
+  const [formations, setFormations] = useState<Formation[]>(provider.formations);
+  const [socialNetworks, setSocialNetworks] = useState<SocialNetwork[]>(provider.socialNetworks);
+
+  const { presentToast } = useGlobal();
+  const [getAddress] = useLazyGetAddressQuery();
+
+  useEffect(() => {
+    if(JSON.stringify(experiences) != JSON.stringify(provider.experiences)) {
+      handleChange("experiences", experiences);
+    }
+  }, [experiences]);
+
+  useEffect(() => {
+    if(JSON.stringify(formations) != JSON.stringify(provider.formations)) {
+      handleChange("formations", formations);
+    }
+  }, [formations]);
+
+  useEffect(() => {
+    if(JSON.stringify(socialNetworks) != JSON.stringify(provider.socialNetworks)) {
+      handleChange("socialNetworks", socialNetworks);
+    }
+  }, [socialNetworks]);
+
+
+  const handleChange = (field: keyof Provider, value: any) => {
+    const newProvider = {
+      ...provider,
+      [field]: value,
+    }
+    onChangeProvider("provider", newProvider);
+  }
+
+
+  const handleBlurCep = async () => {
+    if(!validateCep(provider.cep)) {
+      return;
+    }
+
+    try {
+      const data = await getAddress(provider.cep!).unwrap();
+      
+      if(data.erro) {
+        return presentToast({message: "Cep não encontrado.", color: "warning"});
+      }
+
+      const newProvider: Provider = {
+        ...provider,
+        cep: data.cep,
+        street: data.logradouro,
+        district: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+      }
+      onChangeProvider("provider", newProvider);
+    } catch (error) {
+      presentToast({message: "Erro ao recuperar dados do cep informado.", color: "danger"});
+    }
+  }
   
   return (
     <>
-      <IonList style={{padding: "0 12px", overflow: "hidden"}}>
+      <IonList style={{padding: "0 12px 16px", overflow: "hidden"}}>
         <IonItem>
           <IonLabel position="floating">Nome Fantasia</IonLabel>
           <IonInput
             type="text"
             value={provider.fantasyName}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => handleChange("fantasyName", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -127,7 +362,9 @@ const ProviderContent = ({provider}: {provider: Provider}) => {
           <IonInput
             type="text"
             value={provider.cep}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => handleChange("cep", e.detail.value!)}
+            onIonBlur={handleBlurCep}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -135,7 +372,8 @@ const ProviderContent = ({provider}: {provider: Provider}) => {
           <IonInput
             type="text"
             value={provider.street}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => handleChange("street", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -143,7 +381,8 @@ const ProviderContent = ({provider}: {provider: Provider}) => {
           <IonInput
             type="text"
             value={provider.number}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => handleChange("number", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -151,7 +390,8 @@ const ProviderContent = ({provider}: {provider: Provider}) => {
           <IonInput
             type="text"
             value={provider.district}
-            readonly={true}
+            readonly={!isEditing}
+            onIonChange={(e) => handleChange("district", e.detail.value!)}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -160,6 +400,7 @@ const ProviderContent = ({provider}: {provider: Provider}) => {
             type="text"
             value={provider.city}
             readonly={true}
+            disabled={isEditing}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -168,61 +409,21 @@ const ProviderContent = ({provider}: {provider: Provider}) => {
             type="text"
             value={provider.state}
             readonly={true}
+            disabled={isEditing}
           ></IonInput>
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Serviço prestado</IonLabel>
-          <IonInput
-            type="text"
-            value={ServiceBR[provider.service]}
-            readonly={true}
-          ></IonInput>
+          <IonSelect placeholder="Selecione" value={provider.service} onIonChange={(e) => handleChange("service", e.detail.value)} disabled={!isEditing}>
+            {Object.entries(ServiceBR).map(([key, value]) => (
+              <IonSelectOption key={key} value={key}>{value}</IonSelectOption>
+            ))}
+          </IonSelect>
         </IonItem>
 
-        {Array.isArray(provider.experiences) && provider.experiences.length && (
-          <IonItem>
-            <h3>Experiências</h3>
-            {provider.experiences.map(ex => (
-              <div>
-                <p><strong>Titulo: </strong>{ex.title}</p>
-                <p><strong>Descrição: </strong>{ex.description}</p>
-              </div>
-            ))}
-          </IonItem>
-        )}
-
-        {(Array.isArray(provider.formations) && provider.formations?.length)  && (
-          <IonItem>
-            <h3>Formações: </h3>
-            {provider.formations.map(fo => (
-              <div>
-                <p><strong>Curso: </strong>{fo.course}</p>
-                <p><strong>Instituição: </strong>{fo.institution}</p>
-                <p>
-                  <>
-                    <strong>Início: </strong>{fo.startDate}
-                  </>
-                </p>
-                <p>
-                  <>
-                    <strong>Término: </strong>{fo.endDate}
-                  </>
-                </p>
-              </div>
-            ))}
-          </IonItem>
-        )}
-
-        {(Array.isArray(provider.socialNetworks) && provider.socialNetworks?.length) && (
-          <IonItem>
-            <h3>Redes Sociais: </h3>
-            {provider.socialNetworks.map(sn => (
-              <div>
-                <p><strong>{sn.type}</strong>{sn.url}</p>
-              </div>
-            ))}
-          </IonItem>
-        )}
+        <Experiences experiences={experiences} setExperiences={setExperiences} readonly={!isEditing}/>
+        <Formations formations={formations} setFormations={setFormations} readonly={!isEditing}/>
+        <SocialNetworks socialNetworks={socialNetworks} setSocialNetworks={setSocialNetworks} readonly={!isEditing}/>
       </IonList>
     </>
   );

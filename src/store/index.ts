@@ -1,7 +1,7 @@
 import { AnyAction, configureStore, PreloadedState, Store } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
-import storage from "redux-persist/lib/storage"
+import storage from "redux-persist/lib/storage";
 import { apiSlice } from "../services/api";
 import { viacepApi } from "../services/viacep/viacep.service";
 import rootReducer from "./reducers";

@@ -76,8 +76,7 @@ export const ProfessionalSignUp = () => {
 
     try {
       const data = await getAddress(cep!).unwrap();
-      console.log("data ", data);
-      
+
       if(data.erro) {
         return presentToast({message: "Cep não encontrado.", color: "warning"});
       }

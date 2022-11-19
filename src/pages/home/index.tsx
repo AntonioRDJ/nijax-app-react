@@ -2,7 +2,6 @@ import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCo
 import { useState } from "react";
 import { CreateOrderModal } from "../../components/createOrderModal";
 
-
 export const Home = () => {
 
   const [modalOpen, setModalOpen] = useState(false);

@@ -28,7 +28,15 @@ export const userSlice = createSlice({
     updateLoggedIn: (state, action: {payload: boolean, type: string}) => {
       state.loggedIn = action.payload;
     },
-    logout: () => initialState,
+    updateUser: (state, action: {payload: User, type: string}) => {
+      state.user = action.payload;
+      state.nameToDisplay = action.payload.provider?.fantasyName || action.payload.name;
+      if(action.payload.provider) {
+        state.isProvider = true;
+        state.service = action.payload.provider.service;
+      }
+    },
+    logout: () => { },
   },
   extraReducers: (builder) => {},
 });
@@ -36,6 +44,7 @@ export const userSlice = createSlice({
 export const {
   saveUser,
   updateLoggedIn,
+  updateUser,
   logout,
 } = userSlice.actions;
 export default userSlice.reducer;

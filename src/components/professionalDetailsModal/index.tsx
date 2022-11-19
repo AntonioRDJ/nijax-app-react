@@ -1,5 +1,8 @@
 import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
+import { Experiences } from "../../pages/professionalSignUp/experiences";
+import { Formations } from "../../pages/professionalSignUp/formations";
+import { SocialNetworks } from "../../pages/professionalSignUp/socialNetworks";
 import { CandidacyProvider } from "../../services/order/types";
 
 type ProfessionalOrderDetailsModalProps = {
@@ -70,50 +73,9 @@ const Content = (props: ContentProps) => {
           ></IonInput>
         </IonItem>
 
-        {(Array.isArray(provider.experiences) && provider.experiences?.length) && (
-          <IonItem>
-            <h3>Experiências: </h3>
-            {provider.experiences.map(ex => (
-              <div>
-                <p><strong>Titulo: </strong>{ex.title}</p>
-                <p><strong>Descrição: </strong>{ex.description}</p>
-              </div>
-            ))}
-          </IonItem>
-        )}
-
-        {(Array.isArray(provider.formations) && provider.formations?.length)  && (
-          <IonItem>
-            <h3>Formações: </h3>
-            {provider.formations.map(fo => (
-              <div>
-                <p><strong>Curso: </strong>{fo.course}</p>
-                <p><strong>Instituição: </strong>{fo.institution}</p>
-                <p>
-                  <>
-                    <strong>Início: </strong>{fo.startDate}
-                  </>
-                </p>
-                <p>
-                  <>
-                    <strong>Término: </strong>{fo.endDate}
-                  </>
-                </p>
-              </div>
-            ))}
-          </IonItem>
-        )}
-
-        {(Array.isArray(provider.socialNetworks) && provider.socialNetworks?.length) && (
-          <IonItem>
-            <h3>Redes Sociais: </h3>
-            {provider.socialNetworks.map(sn => (
-              <div>
-                <p><strong>{sn.type}</strong>{sn.url}</p>
-              </div>
-            ))}
-          </IonItem>
-        )}
+        <Experiences experiences={provider.experiences} setExperiences={() => null} readonly={true} />
+        <Formations formations={provider.formations} setFormations={() => null} readonly={true} />
+        <SocialNetworks socialNetworks={provider.socialNetworks} setSocialNetworks={() => null} readonly={true} />
 
       </IonList>
     </div>

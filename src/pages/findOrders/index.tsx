@@ -54,8 +54,7 @@ export const FindOrders = () => {
     }
   };
 
-  const getListOrderRequestDebounce = useCallback(debounce(getListOrderRequest, 500), []);
-
+  const getListOrderRequestDebounce = useCallback(debounce(getListOrderRequest, 500), [providerService]);
 
   const openOrderDetails = (order: Order) => {
     setOrderClicked(order);
