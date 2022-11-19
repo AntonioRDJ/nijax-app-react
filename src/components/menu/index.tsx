@@ -26,11 +26,12 @@ interface AppPage {
   onlyProvider?: boolean;
 }
 
-const disabledPages = [
-  "/login",
-  "/signup",
-  "/signup/professional",
-];
+// const disabledPages = [
+//   "/login",
+//   "/signup",
+//   "/signup/professional",
+// ];
+// disabled={disabledPages.includes(location.pathname)}
 
 const appPages: AppPage[] = [
   {
@@ -73,7 +74,7 @@ const Menu: React.FC = () => {
   }
 
   return (
-    <IonMenu contentId="main" type="overlay" disabled={disabledPages.includes(location.pathname)}>
+    <IonMenu contentId="main" type="overlay">
       <IonHeader>
         <IonToolbar>
           <IonTitle>Menu</IonTitle>

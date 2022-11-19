@@ -7,10 +7,11 @@ import { ExperienceBox } from "./styles";
 type SocialNetworksProps = {
   socialNetworks: SocialNetwork[];
   setSocialNetworks: React.Dispatch<React.SetStateAction<SocialNetwork[]>>;
+  readonly?: boolean;
 };
 
 export const SocialNetworks = (props: SocialNetworksProps) => {
-  const { socialNetworks, setSocialNetworks } = props;
+  const { socialNetworks, setSocialNetworks, readonly } = props;
 
   const createNewSocialNetwork = () => {
     setSocialNetworks(social => [...social, {
@@ -45,10 +46,14 @@ export const SocialNetworks = (props: SocialNetworksProps) => {
             url={social.url}
             onChange={(value) => updateSocialNetwork({...social, type: value.type, url: value.url})}
             onClose={() => removeSocialNetwork(social)}
+            readonly={readonly}
           />
         ))}
       </div>
-      <IonButton onClick={createNewSocialNetwork} style={{marginTop: "8px"}}>Adicionar Rede Social</IonButton>
+
+      {!readonly && (
+        <IonButton onClick={createNewSocialNetwork} style={{marginTop: "8px"}}>Adicionar Rede Social</IonButton>
+      )}
     </>
   );
 };
@@ -58,16 +63,22 @@ type SocialNetworkProps = {
   url: string;
   onChange?: ({type, url}: {type?: SocialNetworkEnum, url: string}) => void;
   onClose?: () => void;
+  readonly?: boolean;
 };
 
 const SocialNetworkComponent = (props: SocialNetworkProps) => {
-  const { type, url, onChange, onClose} = props;
+  const { type, url, onChange, onClose, readonly} = props;
 
   return (
     <ExperienceBox>
       <IonItem>
         <IonLabel position="floating">Rede Social</IonLabel>
-        <IonSelect placeholder="Selecione" value={type} onIonChange={(e) => onChange && onChange({type: e.detail.value!, url})}>
+        <IonSelect
+          placeholder="Selecione"
+          value={type}
+          onIonChange={(e) => onChange && onChange({type: e.detail.value!, url})}
+          disabled={readonly}
+        >
           {Object.entries(SocialNetworkEnum).map(([key, value]) => (
             <IonSelectOption key={key} value={key}>{value}</IonSelectOption>
           ))}
@@ -79,11 +90,15 @@ const SocialNetworkComponent = (props: SocialNetworkProps) => {
           type="text"
           value={url}
           onIonChange={(e) => onChange && onChange({url: e.detail.value!, type})}
+          readonly={readonly}
         ></IonInput>
       </IonItem>
-      <IonButton fill="clear" shape="round" size="small" style={{position: "absolute", right: "0", top: "0", zIndex: "1"}} onClick={onClose}>
-        <IonIcon slot="icon-only" icon={close}></IonIcon>
-      </IonButton>
+
+      {!readonly && (
+        <IonButton fill="clear" shape="round" size="small" style={{position: "absolute", right: "0", top: "0", zIndex: "1"}} onClick={onClose}>
+          <IonIcon slot="icon-only" icon={close}></IonIcon>
+        </IonButton>
+      )}
     </ExperienceBox>
   );
 };

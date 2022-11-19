@@ -26,7 +26,6 @@ export const SignIn = () => {
     try {
       const { data } = await loginEndpoint({email, password}).unwrap();
       dispatch(saveUser(data));
-      router.push("/page/Index");
     } catch (error) {
       presentToast({message: "Falha ao logar, tente novamente."});
     }

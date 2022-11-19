@@ -37,6 +37,13 @@ export const userEndpoints = apiSlice.injectEndpoints({
         url: `v1/user/${userId}`,
       }),
     }),
+    updateUser: builder.mutation<{data: {user: User}}, User>({
+      query: (user) => ({
+        url: 'v1/user',
+        method: 'PATCH',
+        body: user,
+      }),
+    }),
   }),
 });
 
@@ -47,4 +54,5 @@ export const {
   useLazyVerifyByCellphoneQuery,
   useLazyVerifyByCpfCnpjQuery,
   useLazyGetByUserIdQuery,
+  useUpdateUserMutation,
 } = userEndpoints;

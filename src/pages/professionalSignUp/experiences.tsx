@@ -6,10 +6,11 @@ import { ExperienceBox } from "./styles";
 type ExperiencesProps = {
   experiences: Experience[];
   setExperiences: React.Dispatch<React.SetStateAction<Experience[]>>;
+  readonly?: boolean;
 };
 
 export const Experiences = (props: ExperiencesProps) => {
-  const { experiences, setExperiences } = props;
+  const { experiences, setExperiences, readonly } = props;
   const createNewExperience = () => {
     setExperiences(formation => [...formation, {
       id: (new Date().getTime()).toString(),
@@ -44,10 +45,13 @@ export const Experiences = (props: ExperiencesProps) => {
             onChange={(value) => updateExperience({...ex, title: value.title, description: value.description})}
             onClose={() => removeExperience(ex)}
             description={ex.description}
+            readonly={readonly}
           />
         ))}
       </div>
-      <IonButton onClick={createNewExperience} style={{marginTop: "8px"}}>Adicionar Experiência</IonButton>
+      {!readonly && (
+        <IonButton onClick={createNewExperience} style={{marginTop: "8px"}}>Adicionar Experiência</IonButton>
+      )}
     </>
   );
 };
@@ -57,10 +61,11 @@ type ExperienceProps = {
   description: string;
   onChange?: ({title, description}: {title: string, description: string}) => void;
   onClose?: () => void;
+  readonly?: boolean;
 };
 
 export const ExperienceComponent = (props: ExperienceProps) => {
-  const { title, description, onChange, onClose } = props;
+  const { title, description, onChange, onClose , readonly} = props;
   return (
     <ExperienceBox>
       <IonItem>
@@ -69,6 +74,7 @@ export const ExperienceComponent = (props: ExperienceProps) => {
           type="text"
           value={title}
           onIonChange={(e) => onChange && onChange({title: e.detail.value!, description})}
+          readonly={readonly}
         ></IonInput>
       </IonItem>
       <IonItem>
@@ -76,11 +82,14 @@ export const ExperienceComponent = (props: ExperienceProps) => {
         <IonTextarea
           value={description}
           onIonChange={(e) => onChange && onChange({description: e.detail.value!, title})}
+          readonly={readonly}
         ></IonTextarea>
       </IonItem>
-      <IonButton fill="clear" shape="round" size="small" style={{position: "absolute", right: "0", top: "0", zIndex: "1"}} onClick={onClose}>
-        <IonIcon slot="icon-only" icon={close}></IonIcon>
-      </IonButton>
+      {!readonly && (
+        <IonButton fill="clear" shape="round" size="small" style={{position: "absolute", right: "0", top: "0", zIndex: "1"}} onClick={onClose}>
+          <IonIcon slot="icon-only" icon={close}></IonIcon>
+        </IonButton>
+      )}
     </ExperienceBox>
   );
 };

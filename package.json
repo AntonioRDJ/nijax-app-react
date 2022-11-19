@@ -52,7 +52,7 @@
     "start": "react-scripts start",
     "build:dev": "env-cmd -f .env.development npm run build",
     "build": "react-scripts build",
-    "build:android": "ionic capacitor build android",
+    "build:android": "env-cmd -f .env.development ionic capacitor build android",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject"
   },

@@ -8,10 +8,9 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 }
 
 export function PrivateRoute({component: Component, onlyProvider, ...rest}: PrivateRouteProps) {
-  const loggedIn = useAppSelector(state => state.user.loggedIn);
   const isProvider = useAppSelector(state => state.user.isProvider);
 
-  const canView = loggedIn && (!onlyProvider || (onlyProvider && isProvider));
+  const canView = !onlyProvider || (onlyProvider && isProvider);
 
   return (
     // Show the component only when the user is logged in
@@ -22,7 +21,7 @@ export function PrivateRoute({component: Component, onlyProvider, ...rest}: Priv
         canView ? (
           <Component {...props}/>
         ) : ( 
-          <Redirect to="/" />
+          <Redirect to="/app/home" />
         )
       }
     />
