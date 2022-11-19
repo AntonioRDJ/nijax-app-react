@@ -23,7 +23,7 @@ export const Home = () => {
 
       <IonContent fullscreen>
         <div className="container">
-          <IonCard onClick={createOrder}>
+          <IonCard onClick={createOrder} style={{cursor: "pointer"}}>
             <IonCardHeader>
               <IonCardTitle>Abrir um chamado</IonCardTitle>
             </IonCardHeader>

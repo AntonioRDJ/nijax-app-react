@@ -19,6 +19,8 @@ export interface Provider {
   city: string;
   state: string;
   number: string;
+  lat?:  number;
+  lng?: number;
   fantasyName?: string;
   service: Service;
   experiences: Experience[];
@@ -76,4 +78,12 @@ export interface SocialNetwork {
   id: string;
   type?: SocialNetworkEnum;
   url: string;
+};
+
+export interface GetAddressResponse {
+  data: {
+    address: {
+      cep: string;
+    }
+  }
 };

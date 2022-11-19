@@ -1,7 +1,7 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
-import { useCreateProviderMutation } from "../../services/user/user.service";
+import { useCreateProviderMutation, useLazyGetAddressByLocationQuery } from "../../services/user/user.service";
 import { CreateProviderRequest, Experience, Formation, SocialNetwork } from "../../services/user/types";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { Service, ServiceBR } from "../../utils/constants";
@@ -12,6 +12,7 @@ import { saveUser } from "../../store/reducers/User/slice";
 import { Address } from "../../services/viacep/types";
 import { validateCep } from "../../utils/validations";
 import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
+import { GeolocationButton } from "../../components/geolocationButton";
 
 export const ProfessionalSignUp = () => {
   const [fantasyName, setFantasyName] = useState<string>();
@@ -25,6 +26,7 @@ export const ProfessionalSignUp = () => {
 
   const [createProvider] = useCreateProviderMutation();
   const [getAddress] = useLazyGetAddressQuery();
+  const [getAddressByLocation] = useLazyGetAddressByLocationQuery();
 
   const signup = useAppSelector(state => state.signup);
   const dispatch = useAppDispatch();
@@ -69,7 +71,7 @@ export const ProfessionalSignUp = () => {
     return addressValid && serviceValid && cepValid && numberValid && experiencesValid && formationsValid && socialNetworksValid;
   }
 
-  const handleBlurCep = async () => {
+  const handleBlurCep = async (cep?: string) => {
     if(!validateCep(cep)) {
       return;
     }
@@ -91,6 +93,16 @@ export const ProfessionalSignUp = () => {
       
     } catch (error) {
       presentToast({message: "Erro ao recuperar dados do cep informado.", color: "danger"});
+    }
+  }
+
+  const handleCaptureLocation = async (lat: number, lng: number) => {
+    try {
+      const {data: {address}} = await getAddressByLocation({lat, lng}).unwrap();
+      setCep(address.cep);
+      handleBlurCep(address.cep);
+    } catch (error) {
+      presentToast({message: "Erro ao recuperar dados da localização.", color: "danger"});
     }
   }
 
@@ -117,12 +129,17 @@ export const ProfessionalSignUp = () => {
           </IonItem>
 
           <IonItem>
+            <IonLabel>Utilizar localização</IonLabel>
+            <GeolocationButton onCapture={handleCaptureLocation}/>
+          </IonItem>
+
+          <IonItem>
             <IonLabel position="floating">CEP</IonLabel>
             <IonInput
               type="text"
               value={cep}
               onIonChange={(e) => setCep(e.detail.value!)}
-              onIonBlur={handleBlurCep}
+              onIonBlur={() => handleBlurCep(cep)}
             ></IonInput>
           </IonItem>
 
