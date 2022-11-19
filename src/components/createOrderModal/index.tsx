@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useCreateOrderMutation } from "../../services/order/order.service";
 import { CreateOrderRequest } from "../../services/order/types";
+import { useLazyGetAddressByLocationQuery } from "../../services/user/user.service";
 import { Address } from "../../services/viacep/types";
 import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
 import { useAppDispatch } from "../../store";
 import { Service, ServiceBR } from "../../utils/constants";
 import { validateCep } from "../../utils/validations";
+import { GeolocationButton } from "../geolocationButton";
 
 const requiredFields = ["title", "description", "service", "address", "cep", "number"];
 
@@ -32,6 +34,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const { presentToast } = useGlobal();
   const [createOrder] = useCreateOrderMutation();
   const [getAddress] = useLazyGetAddressQuery();
+  const [getAddressByLocation] = useLazyGetAddressByLocationQuery();
 
   const handleConfirm = async () => {
     let orderToCreate: any = {title, description, service, cep, number, address, distance};
@@ -49,13 +52,13 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
     try {
       const { data } = await createOrder(orderToCreate as CreateOrderRequest).unwrap();
       presentToast({message: "Pedido criado com sucesso.", color: "success"});
-      onClose();
+      handleClose();
     } catch (error) {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
     }
   };
 
-  const handleBlurCep = async () => {
+  const handleBlurCep = async (cep?: string) => {
     if(!validateCep(cep)) {
       return
     }
@@ -65,7 +68,6 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
       if(data.erro) {
         return presentToast({message: "Cep não encontrado.", color: "warning"});
       }
-
       setAddress({
         cep: data.cep,
         street: data.logradouro,
@@ -79,12 +81,33 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
     }
   }
 
+  const handleCaptureLocation = async (lat: number, lng: number) => {
+    try {
+      const {data: {address}} = await getAddressByLocation({lat, lng}).unwrap();
+      setCep(address.cep);
+      handleBlurCep(address.cep);
+    } catch (error) {
+      presentToast({message: "Erro ao recuperar dados da localização.", color: "danger"});
+    }
+  }
+
+  const handleClose = () => {
+    setTitle(undefined);
+    setDescription(undefined);
+    setService(undefined);
+    setAddress(undefined);
+    setCep(undefined);
+    setNumber(undefined);
+    setDistance(undefined);
+    onClose();
+  }
+
   return (
-    <IonModal isOpen={open}>
+    <IonModal isOpen={open} onDidDismiss={handleClose}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={onClose}>
+            <IonButton onClick={handleClose}>
               <IonIcon slot="icon-only" icon={arrowBackOutline}></IonIcon>
             </IonButton>
           </IonButtons>
@@ -118,12 +141,16 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
             </IonSelect>
           </IonItem>
           <IonItem>
+            <IonLabel>Utilizar localização</IonLabel>
+            <GeolocationButton onCapture={handleCaptureLocation}/>
+          </IonItem>
+          <IonItem>
             <IonLabel position="floating">CEP</IonLabel>
             <IonInput
               type="text"
               value={cep}
               onIonChange={(e) => setCep(e.detail.value!)}
-              onIonBlur={handleBlurCep}
+              onIonBlur={() => handleBlurCep(cep)}
             ></IonInput>
           </IonItem>
 

@@ -1,5 +1,5 @@
 import { apiSlice } from "../api";
-import { CreateProviderRequest, CreateUserRequest, CreateUserResponse, User } from "./types";
+import { CreateProviderRequest, CreateUserRequest, CreateUserResponse, GetAddressResponse, User } from "./types";
 
 export const userEndpoints = apiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -44,6 +44,15 @@ export const userEndpoints = apiSlice.injectEndpoints({
         body: user,
       }),
     }),
+    getAddressByLocation: builder.query<GetAddressResponse, {lat: number, lng: number}>({
+      query: ({lat, lng}) => ({
+        url: 'v1/location/address',
+        params: {
+          lat,
+          lng,
+        }
+      }),
+    }),
   }),
 });
 
@@ -55,4 +64,5 @@ export const {
   useLazyVerifyByCpfCnpjQuery,
   useLazyGetByUserIdQuery,
   useUpdateUserMutation,
+  useLazyGetAddressByLocationQuery,
 } = userEndpoints;
