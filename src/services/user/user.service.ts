@@ -53,6 +53,12 @@ export const userEndpoints = apiSlice.injectEndpoints({
         }
       }),
     }),
+    deleteUser: builder.mutation<{data: {user: User}}, void>({
+      query: () => ({
+        url: 'v1/user',
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
@@ -65,4 +71,5 @@ export const {
   useLazyGetByUserIdQuery,
   useUpdateUserMutation,
   useLazyGetAddressByLocationQuery,
+  useDeleteUserMutation,
 } = userEndpoints;
