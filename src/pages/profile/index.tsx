@@ -74,6 +74,11 @@ export const Profile = () => {
     if(userEdit?.isCompany && !await validateProvider()) {
       return;
     }
+
+    if(JSON.stringify(user) == JSON.stringify(userEdit)) {
+      setIsEditing(false);
+      return;
+    }
     
     try {
       present({
