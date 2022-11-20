@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useLazyListOrdersQuery } from "../../services/order/order.service";
 import { Order } from "../../services/order/types";
-import { ServiceBR, StatusBR } from "../../utils/constants";
+import { Service, ServiceBR, StatusBR } from "../../utils/constants";
 import debounce from "lodash.debounce";
 import { LoadingComponent } from "../../components/loadingComponent";
 import { useAppSelector } from "../../store";
@@ -24,7 +24,7 @@ export const FindOrders = () => {
   const { presentToast } = useGlobal();
 
   useIonViewWillEnter(() => {
-    getListOrderRequestDebounce(1);
+    getListOrderRequestDebounce(1, providerService);
   });
 
   useIonViewDidLeave(() => {
@@ -38,13 +38,13 @@ export const FindOrders = () => {
 
   useEffect(() => {
     if(page > 1) {
-      getListOrderRequestDebounce(page);
+      getListOrderRequestDebounce(page, providerService);
     }
   }, [page]);
 
-  const getListOrderRequest = async (page: number) => {
+  const getListOrderRequest = async (page: number, service: Service) => {
     try {
-      const data = await getListOrder({page, limit, service: providerService, forProvider: true}).unwrap();
+      const data = await getListOrder({page, limit, service, forProvider: true}).unwrap();
       setOrders(oldOrders => [...oldOrders, ...data]);
       setIsInfiniteDisabled(data.length < limit);
     } catch (error) {
@@ -54,7 +54,7 @@ export const FindOrders = () => {
     }
   };
 
-  const getListOrderRequestDebounce = useCallback(debounce(getListOrderRequest, 500), [providerService]);
+  const getListOrderRequestDebounce = useCallback(debounce(getListOrderRequest, 500), []);
 
   const openOrderDetails = (order: Order) => {
     setOrderClicked(order);
