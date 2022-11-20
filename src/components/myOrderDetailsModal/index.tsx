@@ -2,7 +2,7 @@ import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTi
 import { arrowBackOutline, checkmark, pencil } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
-import { useLazyGetOrderQuery, useUpdateOrderMutation } from "../../services/order/order.service";
+import { useDeleteOrderMutation, useLazyGetOrderQuery, useUpdateOrderMutation } from "../../services/order/order.service";
 import { Candidacy, CandidacyProvider, Order } from "../../services/order/types";
 import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
 import { ServiceBR, StatusBR } from "../../utils/constants";
@@ -15,7 +15,7 @@ const requiredFields = ["status", "title", "description", "service", "cep", "num
 type MyOrderDetailsModalProps = {
   orderId?: string;
   open: boolean;
-  onClose: () => void;
+  onClose: (refresh?: boolean) => void;
 };
 
 export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
@@ -30,6 +30,7 @@ export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
   const [getOrder] = useLazyGetOrderQuery();
   const [updateOrder] = useUpdateOrderMutation();
   const [getAddress] = useLazyGetAddressQuery();
+  const [deleteOrder] = useDeleteOrderMutation();
 
   useEffect(() => {
     if(!orderId) {
@@ -126,12 +127,28 @@ export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
     }
   }
 
+  const handleDeleteOrder = async () => {
+    try {
+      present({
+        spinner: "crescent",
+      });
+      const { data } = await deleteOrder(orderId!).unwrap();
+      setIsEditing(false);
+      presentToast({message: "Pedido excluido com sucesso.", color: "success"});
+      onClose(true);
+    } catch (error) {
+      presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
+    } finally {
+      dismiss();
+    }
+  }
+
   return (
-    <IonModal isOpen={open}>
+    <IonModal isOpen={open} onDidDismiss={() => onClose(false)}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={onClose}>
+            <IonButton onClick={() => onClose(true)}>
               <IonIcon slot="icon-only" icon={arrowBackOutline}></IonIcon>
             </IonButton>
           </IonButtons>
@@ -154,7 +171,7 @@ export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
           <LoadingComponent />
           ) : (
           <>
-            {orderEdit && <Content order={orderEdit} isEditing={isEditing} onChange={handleChangeOrderEdit} onBlurCep={handleBlurCep}/> }
+            {orderEdit && <Content order={orderEdit} isEditing={isEditing} onChange={handleChangeOrderEdit} onBlurCep={handleBlurCep} onDeleteOrder={handleDeleteOrder}/> }
           </>
         )}
       </IonContent>
@@ -167,10 +184,11 @@ type ContentProps = {
   isEditing: boolean;
   onChange: (field: keyof Order, value: any) => void;
   onBlurCep: (cep: string) => void;
+  onDeleteOrder: () => void;
 }
 
 const Content = (props: ContentProps) => {
-  const { order, isEditing, onChange, onBlurCep } = props;
+  const { order, isEditing, onChange, onBlurCep, onDeleteOrder } = props;
   const [providerSelected, setProviderSelected] = useState<CandidacyProvider>();
   const [openProfessionalModal, setOpenProfessionalModal] = useState(false);
 
@@ -288,6 +306,20 @@ const Content = (props: ContentProps) => {
           ></IonRange>
         </IonItem>
       </IonList>
+
+      {isEditing && (
+        <IonButton
+          color="danger"
+          onClick={onDeleteOrder}
+          style={{
+            display: "flex",
+            width: "fit-content",
+            margin: "16px auto"
+          }}
+        >
+          Excluir pedido
+        </IonButton>
+      )}
 
       {!isEditing && (
         <CandidateList candidates={order!.candidacy ?? []} onClickCandidate={handleOpenProfessionalModal}/>

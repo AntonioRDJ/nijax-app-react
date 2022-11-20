@@ -1,4 +1,4 @@
-import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
+import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonLoading, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
 import { useCallback, useEffect, useState } from "react";
 import { MyOrderDetailsModal } from "../../components/myOrderDetailsModal";
 import { useGlobal } from "../../contexts/GlobalContext";
@@ -18,6 +18,7 @@ export const MyOrders = () => {
   const [orderClicked, setOrderClicked] = useState<Order>();
   const [isInfiniteDisabled, setIsInfiniteDisabled] = useState(false);
 
+  const [present, dismiss] = useIonLoading();
   const [getListOrder] = useLazyListOrdersQuery();
   const { presentToast } = useGlobal();
 
@@ -26,13 +27,21 @@ export const MyOrders = () => {
   });
 
   useIonViewDidLeave(() => {
+    resetFields();
+  });
+
+  const resetFields = (refresh?: boolean) => {
     setPage(1);
     setOrders([]);
     setModalOpen(false);
     setOrderClicked(undefined);
     setIsInfiniteDisabled(false);
     setLoading(true);
-  });
+
+    if(refresh) {
+      getListOrderRequestDebounce(1);
+    }
+  }
 
   useEffect(() => {
     if(page > 1) {
@@ -49,6 +58,7 @@ export const MyOrders = () => {
       presentToast({message: "Ocorreu um erro ao carregar mais pedidos."});
     } finally {
       setLoading(false);
+      dismiss();
     }
   };
 
@@ -60,9 +70,18 @@ export const MyOrders = () => {
     setModalOpen(true);
   };
 
-  const closeOrderDetails = () => {
+  const closeOrderDetails = (refresh?: boolean) => {
     setModalOpen(false);
     setOrderClicked(undefined);
+    
+    if(refresh) {
+      present({
+        spinner: "crescent",
+      });
+      setOrders([]);
+      setPage(1);
+      getListOrderRequestDebounce(1);
+    }
   };
 
   const handleInfiniteScroll = async (ev: any) => {

@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { LoadingComponent } from "../../components/loadingComponent";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { Experience, Formation, Provider, SocialNetwork, User } from "../../services/user/types";
-import { useLazyGetByUserIdQuery, useLazyVerifyByCellphoneQuery, useLazyVerifyByCpfCnpjQuery, useLazyVerifyByEmailQuery, useUpdateUserMutation } from "../../services/user/user.service";
+import { useDeleteUserMutation, useLazyGetByUserIdQuery, useLazyVerifyByCellphoneQuery, useLazyVerifyByCpfCnpjQuery, useLazyVerifyByEmailQuery, useUpdateUserMutation } from "../../services/user/user.service";
 import { useLazyGetAddressQuery } from "../../services/viacep/viacep.service";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { updateUser as updateUserAction } from "../../store/reducers/User/slice";
+import { logout, updateUser as updateUserAction } from "../../store/reducers/User/slice";
 import { ServiceBR } from "../../utils/constants";
 import { validateBirthDate, validateCellphone, validateCep, validateCpfCnpj, validateEmail } from "../../utils/validations";
 import { Experiences } from "../professionalSignUp/experiences";
@@ -45,6 +45,7 @@ export const Profile = () => {
   const [verifyCellphone] = useLazyVerifyByCellphoneQuery();
   const [verifyCpfCnpj] = useLazyVerifyByCpfCnpjQuery();
   const [updateUser] = useUpdateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
   useIonViewWillEnter(async () => {
     try {
@@ -168,6 +169,22 @@ export const Profile = () => {
     return streetValid && districtValid && serviceValid && cepValid && numberValid && experiencesValid && formationsValid && socialNetworksValid;
   }
 
+  const handleDeleteUser = async () => {
+    try {
+      present({
+        spinner: "crescent",
+      });
+      const { data } = await deleteUser().unwrap();
+      setIsEditing(false);
+      presentToast({message: "Conta excluida com sucesso.", color: "success"});
+      dispatch(logout());
+    } catch (error) {
+      presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
+    } finally {
+      dismiss();
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -209,6 +226,20 @@ export const Profile = () => {
                   isEditing={isEditing}
                   onChangeProvider={handleChangeUserEdit}
                 /> 
+              )}
+
+              {(isEditing && userEdit) && (
+                <IonButton
+                  color="danger"
+                  onClick={handleDeleteUser}
+                  style={{
+                    display: "flex",
+                    width: "fit-content",
+                    margin: "16px auto"
+                  }}
+                >
+                  Excluir conta
+                </IonButton>
               )}
             </>
           </div>
