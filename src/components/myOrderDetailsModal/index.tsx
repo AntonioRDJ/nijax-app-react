@@ -76,6 +76,11 @@ export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
       return;
     }
 
+    if(JSON.stringify(order) ==  JSON.stringify(orderEdit)) {
+      setIsEditing(false);
+      return;
+    }
+
     try {
       present({
         spinner: "crescent",
@@ -284,7 +289,9 @@ const Content = (props: ContentProps) => {
         </IonItem>
       </IonList>
 
-      <CandidateList candidates={order!.candidacy ?? []} onClickCandidate={handleOpenProfessionalModal}/>
+      {!isEditing && (
+        <CandidateList candidates={order!.candidacy ?? []} onClickCandidate={handleOpenProfessionalModal}/>
+      )}
 
       <ProfessionalDetailsModal provider={providerSelected} open={openProfessionalModal} onClose={handleCloseProfessionalModal}/>
     </>
