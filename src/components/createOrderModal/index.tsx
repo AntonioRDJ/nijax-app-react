@@ -12,7 +12,7 @@ import { Service, ServiceBR } from "../../utils/constants";
 import { validateCep } from "../../utils/validations";
 import { GeolocationButton } from "../geolocationButton";
 
-const requiredFields = ["title", "description", "service", "address", "cep", "number"];
+const requiredFields = ["title", "description", "service", "address", "cep", "number", "distance"];
 
 type CreateOrderModalProps = {
   open: boolean;
