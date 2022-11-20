@@ -1,4 +1,4 @@
-import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonCard, IonCardHeader, IonCardTitle, IonSelect, IonSelectOption, useIonLoading } from "@ionic/react";
+import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonCard, IonCardHeader, IonCardTitle, IonSelect, IonSelectOption, useIonLoading, IonRange } from "@ionic/react";
 import { arrowBackOutline, checkmark, pencil } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
@@ -272,14 +272,15 @@ const Content = (props: ContentProps) => {
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Raio de procura (km)</IonLabel>
-          <IonInput
-            type="number"
-            value={order?.distance}
-            max={150}
+          <IonRange
+            debounce={50}
             min={1}
-            readonly={!isEditing}
-            onIonChange={(e) => onChange("distance", e.detail.value!)}
-          ></IonInput>
+            max={150}
+            value={order?.distance}
+            onIonChange={({ detail }) => onChange("distance", detail.value! as number)}
+            pin={true}
+            disabled={!isEditing}
+          ></IonRange>
         </IonItem>
       </IonList>
 
