@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonRange, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
@@ -28,7 +28,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
   const [number, setNumber] = useState<string>();
 
   const [address, setAddress] = useState<Address>();
-  const [distance, setDistance] = useState<number>();
+  const [distance, setDistance] = useState<number>(1);
 
   const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
@@ -98,7 +98,7 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
     setAddress(undefined);
     setCep(undefined);
     setNumber(undefined);
-    setDistance(undefined);
+    setDistance(1);
     onClose();
   }
 
@@ -195,14 +195,15 @@ export const CreateOrderModal = (props: CreateOrderModalProps) => {
             ></IonInput>
           </IonItem>
           <IonItem>
-            <IonLabel position="floating">Raio de procura (km)</IonLabel>
-            <IonInput
-              type="number"
-              value={distance}
-              onIonChange={(e) => setDistance(parseInt(e.detail.value!))}
-              max={150}
+            <IonLabel position="stacked">Raio de procura (km)</IonLabel>
+            <IonRange
+              debounce={50}
               min={1}
-            ></IonInput>
+              max={150}
+              value={distance}
+              onIonChange={({ detail }) => setDistance(detail.value! as number)}
+              pin={true}
+            ></IonRange>
           </IonItem>
         </IonList>
       </IonContent>
