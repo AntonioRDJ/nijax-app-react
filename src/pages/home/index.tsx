@@ -1,9 +1,10 @@
 import { IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useState } from "react";
 import { CreateOrderModal } from "../../components/createOrderModal";
+import { useAppSelector } from "../../store";
 
 export const Home = () => {
-
+  const isProvider = useAppSelector(state => state.user.isProvider);
   const [modalOpen, setModalOpen] = useState(false);
 
   const createOrder = () => {
@@ -39,6 +40,26 @@ export const Home = () => {
               Clique aqui para ir até seus pedidos.
             </IonCardContent>
           </IonCard>
+          { isProvider && (
+            <>
+              <IonCard routerLink="find-orders" routerDirection="forward">
+                <IonCardHeader>
+                  <IonCardTitle>Encontre Serviços</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  Clique aqui para encontrar serviços.
+                </IonCardContent>
+              </IonCard>
+              <IonCard routerLink="applied-orders" routerDirection="forward">
+                <IonCardHeader>
+                  <IonCardTitle>Acesse seus serviços aplicados</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  Clique aqui para ir até seus serviços aplicados.
+                </IonCardContent>
+              </IonCard>
+            </>
+          )}
         </div>
         <CreateOrderModal open={modalOpen} onClose={() => setModalOpen(false)}/>
       </IonContent>

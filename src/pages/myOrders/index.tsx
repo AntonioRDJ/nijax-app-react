@@ -7,6 +7,7 @@ import { Order } from "../../services/order/types";
 import { ServiceBR, StatusBR } from "../../utils/constants";
 import debounce from "lodash.debounce";
 import { LoadingComponent } from "../../components/loadingComponent";
+import { CreateOrderModal } from "../../components/createOrderModal";
 
 const limit = 15;
 
@@ -104,19 +105,25 @@ export const MyOrders = () => {
           <LoadingComponent />
         ) : (
           <>
-            <div className="container">
-              { orders?.map(order => (
-                <IonCard key={order.id} onClick={() => openOrderDetails(order)}>
-                  <IonCardHeader>
-                    <IonCardSubtitle>{StatusBR[order.status]}</IonCardSubtitle>
-                    <IonCardTitle>{order.title}</IonCardTitle>
-                    <IonCardSubtitle>{ServiceBR[order.service]}</IonCardSubtitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <p>Endereço: {order.street}, {order.number} - {order.district}, {order.city}</p>
-                  </IonCardContent>
-                </IonCard>
-              ))}
+            <div style={{height: "100%"}}>
+              { orders.length ? (
+                <>
+                  { orders?.map(order => (
+                    <IonCard key={order.id} onClick={() => openOrderDetails(order)}>
+                      <IonCardHeader>
+                        <IonCardSubtitle>{StatusBR[order.status]}</IonCardSubtitle>
+                        <IonCardTitle>{order.title}</IonCardTitle>
+                        <IonCardSubtitle>{ServiceBR[order.service]}</IonCardSubtitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        <p>Endereço: {order.street}, {order.number} - {order.district}, {order.city}</p>
+                      </IonCardContent>
+                    </IonCard>
+                  ))}
+                </>
+              ) : (
+                <EmptyOrders />
+              )}
             </div>
             <MyOrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id}/>
             <IonInfiniteScroll
@@ -133,5 +140,21 @@ export const MyOrders = () => {
         )}
       </IonContent>
     </IonPage>
+  );
+};
+
+const EmptyOrders = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", height: "100%",
+      textAlign: "center", justifyContent: "center",
+    }}>
+      <h3 style={{margin: 0, marginBottom: "12px"}}>Nenhum pedido para ser mostrado</h3>
+      <h5 style={{margin: 0, fontWeight: "700"}} onClick={() => setModalOpen(true)}>Clique aqui para criar um novo</h5>
+
+      <CreateOrderModal open={modalOpen} onClose={() => setModalOpen(false)}/>
+    </div>
   );
 };

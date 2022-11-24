@@ -50,6 +50,12 @@ export const orderEndpoints = apiSlice.injectEndpoints({
         url: `v1/order/set-candidacy/${orderId}`,
       }),
     }),
+    removeApplyInOrder: builder.mutation<any, string>({
+      query: (orderId) => ({
+        method: "PATCH",
+        url: `v1/order/remove-candidacy/${orderId}`,
+      }),
+    }),
     matchOrder: builder.mutation<any, { orderId: string; providerId: string }>({
       query: ({ orderId, providerId }) => ({
         method: "PATCH",
@@ -82,6 +88,7 @@ export const {
   useLazyGetOrderQuery,
   useLazyListOrdersQuery,
   useApplyInOrderMutation,
+  useRemoveApplyInOrderMutation,
   useMatchOrderMutation,
   useUpdateOrderMutation,
   useDeleteOrderMutation,
