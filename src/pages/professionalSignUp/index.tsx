@@ -1,4 +1,4 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage, IonSelect, IonSelectOption, IonTitle, IonToggle, IonToolbar } from "@ionic/react";
 import { useState } from "react";
 import { useGlobal } from "../../contexts/GlobalContext";
 import { useCreateProviderMutation, useLazyGetAddressByLocationQuery } from "../../services/user/user.service";
@@ -20,6 +20,7 @@ export const ProfessionalSignUp = () => {
   const [number, setNumber] = useState<string>();
   const [address, setAddress] = useState<Address>();
   const [service, setService] = useState<Service>();
+  const [showNotifications, setShowNotifications] = useState(true);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [formations, setFormations] = useState<Formation[]>([]);
   const [socialNetworks, setSocialNetworks] = useState<SocialNetwork[]>([]);
@@ -31,10 +32,9 @@ export const ProfessionalSignUp = () => {
   const signup = useAppSelector(state => state.signup);
   const dispatch = useAppDispatch();
   const { presentToast } = useGlobal();
-  const router = useIonRouter();
 
   const handleConfirm = async () => {
-    const providerToCreate = {fantasyName, ...address, service, number, experiences, formations, socialNetworks}; 
+    const providerToCreate = {fantasyName, ...address, service, number, showNotifications,  experiences, formations, socialNetworks}; 
     if(!fieldsIsValid()) {
       presentToast({message: "Por favor preencha os campos obrigatórios."});
       return;
@@ -46,7 +46,6 @@ export const ProfessionalSignUp = () => {
       const { data } = await createProvider({...user, ...providerToCreate} as CreateProviderRequest).unwrap();
       presentToast({message: "Cadastro realizado com sucesso.", color: "success"});
       dispatch(saveUser(data));
-      router.push("/page/index", "root");
     } catch (error) {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
     }
@@ -191,6 +190,15 @@ export const ProfessionalSignUp = () => {
                 <IonSelectOption key={key} value={key}>{value}</IonSelectOption>
               ))}
             </IonSelect>
+          </IonItem>
+
+          <IonItem>
+            <IonLabel>Deseja receber notificações via SMS?</IonLabel>
+            <IonToggle
+              slot="end"
+              checked={showNotifications}
+              onIonChange={(e) => setShowNotifications(e.detail.checked)}
+            ></IonToggle>
           </IonItem>
 
           <Experiences experiences={experiences} setExperiences={setExperiences} />

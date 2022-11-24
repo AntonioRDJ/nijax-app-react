@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonLoading, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToggle, IonToolbar, useIonLoading, useIonViewDidLeave, useIonViewWillEnter } from "@ionic/react";
 import { checkmark, pencil } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { LoadingComponent } from "../../components/loadingComponent";
@@ -87,6 +87,7 @@ export const Profile = () => {
       });
       const { data } = await updateUser(userEdit!).unwrap();
       presentToast({message: "Alterações realizadas com sucesso.", color: "success"});
+      setUser(data.user);
       dispatch(updateUserAction(data.user));
       setIsEditing(false);
     } catch (error) {
@@ -303,6 +304,7 @@ const UserContent = (props: UserContentProps) => {
             type="text"
             value={user.cpfCnpj}
             readonly={!isEditing}
+            disabled={isEditing}
             onIonChange={(e) => onChangeUser("cpfCnpj", e.detail.value!)}
           ></IonInput>
         </IonItem>
@@ -455,6 +457,16 @@ const ProviderContent = (props: ProviderContentProps) => {
               <IonSelectOption key={key} value={key}>{value}</IonSelectOption>
             ))}
           </IonSelect>
+        </IonItem>
+
+        <IonItem>
+          <IonLabel>Deseja receber notificações via SMS?</IonLabel>
+          <IonToggle
+            slot="end"
+            checked={provider.showNotifications}
+            onIonChange={(e) => handleChange("showNotifications", e.detail.checked)}
+            disabled={!isEditing}
+          ></IonToggle>
         </IonItem>
 
         <Experiences experiences={experiences} setExperiences={setExperiences} readonly={!isEditing}/>
