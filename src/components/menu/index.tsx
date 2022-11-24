@@ -26,14 +26,12 @@ interface AppPage {
   onlyProvider?: boolean;
 }
 
-// const disabledPages = [
-//   "/login",
-//   "/signup",
-//   "/signup/professional",
-// ];
-// disabled={disabledPages.includes(location.pathname)}
-
 const appPages: AppPage[] = [
+  {
+    title: 'Home',
+    url: '/app/home',
+    icon: homeOutline,
+  },
   {
     title: 'Perfil',
     url: '/app/profile',
@@ -43,11 +41,6 @@ const appPages: AppPage[] = [
     title: 'Meus Pedidos',
     url: '/app/orders',
     icon: readerOutline,
-  },
-  {
-    title: 'Home',
-    url: '/app/home',
-    icon: homeOutline,
   },
   {
     title: 'Encontrar Serviços',

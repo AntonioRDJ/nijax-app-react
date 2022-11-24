@@ -1,8 +1,7 @@
 import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton , IonIcon, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonTextarea, useIonLoading } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useGlobal } from "../../contexts/GlobalContext";
-import { useApplyInOrderMutation, useGetOrderQuery } from "../../services/order/order.service";
-import { useAppSelector } from "../../store";
+import { useApplyInOrderMutation, useGetOrderQuery, useRemoveApplyInOrderMutation } from "../../services/order/order.service";
 import { ServiceBR, StatusBR } from "../../utils/constants";
 import { LoadingComponent } from "../loadingComponent";
 
@@ -10,11 +9,11 @@ type ProfessionalOrderDetailsModalProps = {
   orderId?: string;
   open: boolean;
   onClose: () => void;
-  disableApplyButton?: boolean;
+  isApplied?: boolean;
 };
 
 export const ProfessionalOrderDetailsModal = (props:  ProfessionalOrderDetailsModalProps) => {
-  const { orderId, open, onClose, disableApplyButton } = props;
+  const { orderId, open, onClose, isApplied } = props;
 
   return (
     <IonModal isOpen={open}>
@@ -29,19 +28,19 @@ export const ProfessionalOrderDetailsModal = (props:  ProfessionalOrderDetailsMo
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        {orderId && <Content orderId={orderId} disableApplyButton={disableApplyButton}/> }
+        {orderId && <Content orderId={orderId} isApplied={isApplied}/> }
       </IonContent>
     </IonModal>
   );
 }
 
-const Content = ({orderId, disableApplyButton}: {orderId: string, disableApplyButton?: boolean}) => {
+const Content = ({orderId, isApplied}: {orderId: string, isApplied?: boolean}) => {
   const { data: order, isLoading } = useGetOrderQuery(orderId);
-  const user = useAppSelector(state => state.user.user);
 
   const [present, dismiss] = useIonLoading();
   const { presentToast } = useGlobal();
   const [applyInOrder] = useApplyInOrderMutation();
+  const [removeApplyInOrder] = useRemoveApplyInOrderMutation();
 
   if(isLoading) {
     return (
@@ -58,6 +57,20 @@ const Content = ({orderId, disableApplyButton}: {orderId: string, disableApplyBu
       presentToast({message: "Candidatura feita com sucesso", color: "success"})
     } catch (error) {
       presentToast({message: "Ocorreu um erro ao se candidatar", color: "danger"})
+    } finally {
+      dismiss();
+    }
+  }
+
+  const removeCandandacyInOrder = async () => {
+    try {
+      present({
+        spinner: "crescent",
+      });
+      await removeApplyInOrder(order!.id).unwrap();
+      presentToast({message: "Candidatura removida com sucesso", color: "success"})
+    } catch (error) {
+      presentToast({message: "Ocorreu um erro ao se remover a candidatura", color: "danger"})
     } finally {
       dismiss();
     }
@@ -113,12 +126,19 @@ const Content = ({orderId, disableApplyButton}: {orderId: string, disableApplyBu
           ></IonInput>
         </IonItem>
       </IonList>
-      { !disableApplyButton && (
+      { !isApplied ? (
         <IonButton 
           style={{width: "50%", alignSelf: "center"}}
           onClick={candandacyInOrder}
         >
           Canditar-se
+        </IonButton>
+      ) : (
+        <IonButton 
+          style={{width: "50%", alignSelf: "center"}}
+          onClick={removeCandandacyInOrder}
+        >
+          Remover candidatura
         </IonButton>
       )}
     </div>

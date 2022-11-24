@@ -88,6 +88,7 @@ export const MyOrderDetailsModal = (props: MyOrderDetailsModalProps) => {
       });
       const { data } = await updateOrder(orderEdit!).unwrap();
       setIsEditing(false);
+      setOrder(data.order);
       presentToast({message: "Alterações realizadas com sucesso.", color: "success"});
     } catch (error) {
       presentToast({message: "Ocorreu um erro, tente novamente mais tarde."});
@@ -233,7 +234,7 @@ const Content = (props: ContentProps) => {
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Tipo de serviço</IonLabel>
-          <IonSelect placeholder="Selecione" value={order?.service} onIonChange={(e) => onChange("service", e.detail.value)} disabled={!isEditing}>
+          <IonSelect placeholder="Selecione" value={order?.service} onIonChange={(e) => onChange("service", e.detail.value)} disabled={true}>
             {Object.entries(ServiceBR).map(([key, value]) => (
               <IonSelectOption key={key} value={key}>{value}</IonSelectOption>
             ))}
@@ -244,7 +245,7 @@ const Content = (props: ContentProps) => {
           <IonInput
             type="text"
             value={order?.cep}
-            readonly={!isEditing}
+            disabled={true}
             onIonChange={(e) => onChange("cep", e.detail.value!)}
             onIonBlur={() => onBlurCep(order.cep)}
           ></IonInput>
@@ -255,7 +256,7 @@ const Content = (props: ContentProps) => {
           <IonInput
             type="text"
             value={order?.street}
-            readonly={!isEditing}
+            disabled={true}
             onIonChange={(e) => onChange("street", e.detail.value!)}
           ></IonInput>
         </IonItem>
@@ -264,7 +265,7 @@ const Content = (props: ContentProps) => {
           <IonInput
             type="text"
             value={order?.number}
-            readonly={!isEditing}
+            disabled={true}
             onIonChange={(e) => onChange("number", e.detail.value!)}
           ></IonInput>
         </IonItem>
@@ -273,7 +274,7 @@ const Content = (props: ContentProps) => {
           <IonInput
             type="text"
             value={order?.district}
-            readonly={!isEditing}
+            disabled={true}
             onIonChange={(e) => onChange("district", e.detail.value!)}
           ></IonInput>
         </IonItem>
@@ -282,7 +283,7 @@ const Content = (props: ContentProps) => {
           <IonInput
             type="text"
             value={order?.city}
-            readonly={true}
+            disabled={true}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -290,7 +291,7 @@ const Content = (props: ContentProps) => {
           <IonInput
             type="text"
             value={order?.state}
-            readonly={true}
+            disabled={true}
           ></IonInput>
         </IonItem>
         <IonItem>
@@ -302,7 +303,7 @@ const Content = (props: ContentProps) => {
             value={order?.distance}
             onIonChange={({ detail }) => onChange("distance", detail.value! as number)}
             pin={true}
-            disabled={!isEditing}
+            disabled={true}
           ></IonRange>
         </IonItem>
       </IonList>
