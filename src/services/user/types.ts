@@ -21,6 +21,7 @@ export interface Provider {
   number: string;
   lat?:  number;
   lng?: number;
+  showNotifications: boolean;
   fantasyName?: string;
   service: Service;
   experiences: Experience[];
@@ -55,6 +56,7 @@ export interface CreateProviderRequest extends CreateUserRequest {
   city: string;
   state: string;
   number: string;
+  showNotifications?: boolean;
   experiences?: Experience[];
   formations?: Formation[];
   socialNetworks?: SocialNetwork[];

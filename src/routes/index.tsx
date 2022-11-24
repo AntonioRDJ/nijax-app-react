@@ -18,30 +18,27 @@ export const Routes = () => {
   
   return (
     <IonReactRouter>
-      <Route path="/">
-        <PrivateRoutes>
-          <>
-            <IonSplitPane contentId="main">
-              <Menu />
-              <IonRouterOutlet id="main">
-                <PrivateRoute path="/app/home" exact={true} component={Home}/>
-                <PrivateRoute path="/app/profile" exact={true} component={Profile}/>
-                <PrivateRoute path="/app/orders" exact={true} component={MyOrders}/>
-                <PrivateRoute path="/app/find-orders" exact={true} component={FindOrders} onlyProvider={true}/>
-                <PrivateRoute path="/app/applied-orders" exact={true} component={AppliedOrders} onlyProvider={true}/>
-              </IonRouterOutlet>
-            </IonSplitPane>
-          </>
-        </PrivateRoutes>
-      </Route>
+      <PrivateRoutes>
+        <>
+          <IonSplitPane contentId="main">
+            <Menu />
+            <IonRouterOutlet id="main">
+              <PrivateRoute path="/app/profile" exact={true} component={Profile}/>
+              <PrivateRoute path="/app/home" exact={true} component={Home}/>
+              <PrivateRoute path="/app/orders" exact={true} component={MyOrders}/>
+              <PrivateRoute path="/app/find-orders" exact={true} component={FindOrders} onlyProvider={true}/>
+              <PrivateRoute path="/app/applied-orders" exact={true} component={AppliedOrders} onlyProvider={true}/>
+            </IonRouterOutlet>
+          </IonSplitPane>
+        </>
+      </PrivateRoutes>
 
-      <Route path="/*">
+      <Route path={["/login", "/signup", "/signup/professional", "/"]}>
         <PublicRoutes restricted={true}>
           <IonRouterOutlet>
             <Route path="/login" exact={true} component={SignIn}/>
             <Route path="/signup" exact={true} component={SignUp}/>
             <Route path="/signup/professional" exact={true} component={ProfessionalSignUp}/>
-            <Redirect from="/" to="/login" exact={true} />
           </IonRouterOutlet>
         </PublicRoutes>
       </Route>
