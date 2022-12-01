@@ -49,6 +49,7 @@ export const FindOrders = () => {
       setIsInfiniteDisabled(data.length < limit);
     } catch (error) {
       presentToast({message: "Ocorreu um erro ao carregar mais pedidos."});
+      setIsInfiniteDisabled(true);
     } finally {
       setLoading(false);
     }
@@ -86,19 +87,26 @@ export const FindOrders = () => {
           <LoadingComponent />
         ) : (
           <>
-            <div className="container">
-              { orders?.map(order => (
-                <IonCard key={order.id} onClick={() => openOrderDetails(order)}>
-                  <IonCardHeader>
-                    <IonCardSubtitle>{StatusBR[order.status]}</IonCardSubtitle>
-                    <IonCardTitle>{order.title}</IonCardTitle>
-                    <IonCardSubtitle>{ServiceBR[order.service]}</IonCardSubtitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <p>Endereço: {order.street}, {order.number} - {order.district}, {order.city}</p>
-                  </IonCardContent>
-                </IonCard>
-              ))}
+            <div style={{height: "100%"}}>
+              { orders.length ? (
+                <>
+                  { orders?.map(order => (
+                  <IonCard key={order.id} onClick={() => openOrderDetails(order)}>
+                    <IonCardHeader>
+                      <IonCardSubtitle>{StatusBR[order.status]}</IonCardSubtitle>
+                      <IonCardTitle>{order.title}</IonCardTitle>
+                      <IonCardSubtitle>{ServiceBR[order.service]}</IonCardSubtitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <p>Endereço: {order.street}, {order.number} - {order.district}, {order.city}</p>
+                    </IonCardContent>
+                  </IonCard>
+                ))}
+                </>
+              ) : (
+                <EmptyOrders />
+              )}
+              
             </div>
             <ProfessionalOrderDetailsModal open={modalOpen} onClose={closeOrderDetails} orderId={orderClicked?.id}/>
             <IonInfiniteScroll
@@ -115,5 +123,16 @@ export const FindOrders = () => {
         )}
       </IonContent>
     </IonPage>
+  );
+};
+
+const EmptyOrders = () => {
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", height: "100%",
+      textAlign: "center", justifyContent: "center",
+    }}>
+      <h3 style={{margin: 0, marginBottom: "12px"}}>Nenhum serviço para ser mostrado</h3>
+    </div>
   );
 };
