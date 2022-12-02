@@ -8,7 +8,7 @@ import { LoadingComponent } from "../loadingComponent";
 type ProfessionalOrderDetailsModalProps = {
   orderId?: string;
   open: boolean;
-  onClose: () => void;
+  onClose: (refresh?: boolean) => void;
   isApplied?: boolean;
 };
 
@@ -20,7 +20,7 @@ export const ProfessionalOrderDetailsModal = (props:  ProfessionalOrderDetailsMo
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={onClose}>
+            <IonButton onClick={() => onClose()}>
               <IonIcon slot="icon-only" icon={arrowBackOutline}></IonIcon>
             </IonButton>
           </IonButtons>
@@ -28,13 +28,13 @@ export const ProfessionalOrderDetailsModal = (props:  ProfessionalOrderDetailsMo
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        {orderId && <Content orderId={orderId} isApplied={isApplied}/> }
+        {orderId && <Content orderId={orderId} isApplied={isApplied} onSave={() => onClose(true)}/> }
       </IonContent>
     </IonModal>
   );
 }
 
-const Content = ({orderId, isApplied}: {orderId: string, isApplied?: boolean}) => {
+const Content = ({orderId, isApplied, onSave}: {orderId: string, isApplied?: boolean, onSave: () => void}) => {
   const { data: order, isLoading } = useGetOrderQuery(orderId);
 
   const [present, dismiss] = useIonLoading();
@@ -54,7 +54,8 @@ const Content = ({orderId, isApplied}: {orderId: string, isApplied?: boolean}) =
         spinner: "crescent",
       });
       await applyInOrder(order!.id).unwrap();
-      presentToast({message: "Candidatura feita com sucesso", color: "success"})
+      presentToast({message: "Candidatura feita com sucesso", color: "success"});
+      onSave();
     } catch (error) {
       presentToast({message: "Ocorreu um erro ao se candidatar", color: "danger"})
     } finally {
@@ -68,7 +69,8 @@ const Content = ({orderId, isApplied}: {orderId: string, isApplied?: boolean}) =
         spinner: "crescent",
       });
       await removeApplyInOrder(order!.id).unwrap();
-      presentToast({message: "Candidatura removida com sucesso", color: "success"})
+      presentToast({message: "Candidatura removida com sucesso", color: "success"});
+      onSave();
     } catch (error) {
       presentToast({message: "Ocorreu um erro ao se remover a candidatura", color: "danger"})
     } finally {
