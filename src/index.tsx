@@ -3,12 +3,25 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';
+import { setupStore, setupPersistor } from './store';
+import { GlobalContextProvider } from './contexts/GlobalContext';
+import { PersistGate } from 'redux-persist/integration/react';
+
+const store = setupStore();
+const persistor = setupPersistor(store);
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <GlobalContextProvider>
+          <App />
+        </GlobalContextProvider>
+      </PersistGate>
+    </Provider>
   </React.StrictMode>
 );
 
