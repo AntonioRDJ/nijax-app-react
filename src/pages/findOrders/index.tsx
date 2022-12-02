@@ -62,9 +62,15 @@ export const FindOrders = () => {
     setModalOpen(true);
   };
 
-  const closeOrderDetails = () => {
+  const closeOrderDetails = (refresh?: boolean) => {
     setModalOpen(false);
     setOrderClicked(undefined);
+
+    if(refresh) {
+      setOrders([]);
+      setPage(1);
+      getListOrderRequestDebounce(1, providerService);
+    }
   };
 
   const handleInfiniteScroll = async (ev: any) => {
